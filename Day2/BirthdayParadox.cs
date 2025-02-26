@@ -5,7 +5,7 @@
 // and only show the dates that have more than 1 person.
 
 public static class BirthdayParadox{
-    public static List<string> GenerateRandomBirthdays(int numberofPeople) {
+    private static List<string> GenerateRandomBirthdays(int numberofPeople) {
         List<string> birthdays = [];
         Random random = new();
         for (int n = 0; n < numberofPeople; n++) {
@@ -17,7 +17,7 @@ public static class BirthdayParadox{
         return birthdays;
     }
 
-    public static Dictionary<string, int> FindSameDates(List<string> birthdays) {
+    private static Dictionary<string, int> FindSameDates(List<string> birthdays) {
         Dictionary<string, int> sameBirthdays = new();
         for (int i = 0; i < birthdays.Count; i++) {
             for (int j = i+1; j < birthdays.Count; j++) {
