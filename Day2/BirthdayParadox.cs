@@ -1,5 +1,5 @@
-// The birthday paradox says that if there is a group of 30 people,
-// there's 50% chance that a person shares the same birthday with someone in the group (which apparently not true).
+// The birthday paradox (birthday problem) says that if there is a group of 23 people,
+// there's at least 50% chance that the group has people with shared birthday.
 
 // This is to show how many people have actually share birthdays,
 // and only show the dates that have more than 1 person.
@@ -39,8 +39,13 @@ public static class BirthdayParadox{
         Dictionary<string, int> sameBirthdays = FindSameDates(birthdays);
         Console.WriteLine($"Number of People in a group of {numberofPeople} with Shared Birthdays");
         Console.WriteLine("Date  | People");
-        foreach (var item in sameBirthdays) {
-            Console.WriteLine($"{item.Key} | {item.Value}");
+        if (sameBirthdays.Count == 0) {
+            Console.WriteLine("None");
+        }
+        else {
+            foreach (var item in sameBirthdays) {
+                Console.WriteLine($"{item.Key} | {item.Value}");
+            }
         }
     }
 }

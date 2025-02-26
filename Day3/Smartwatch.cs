@@ -4,7 +4,6 @@ internal class Smartwatch : IWatch, ISmartphone {
 
     public Smartwatch(string brand) {
         Brand = brand;
-        StrapMaterial = StrapMaterials.Rubber;
     }
 
     public Smartwatch(string brand, StrapMaterials strapType) {
@@ -26,6 +25,7 @@ internal class Smartwatch : IWatch, ISmartphone {
         Console.WriteLine("Call ended.");
     }
     public void Message() {
+        Console.WriteLine("Start writing message");
         Console.Write("To: ");
         string? destinationNumber = Console.ReadLine();
         while (string.IsNullOrEmpty(destinationNumber)) {
