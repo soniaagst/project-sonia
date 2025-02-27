@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Day3", "Day3\Day3.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicExerciseFoobar", "LogicExerciseFoobar\LogicExerciseFoobar.csproj", "{0B91F52D-2460-47B7-BF13-4135DD061EC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList", "ToDoList\ToDoList.csproj", "{505CD7DC-6364-419C-8B80-AB847ED19516}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{0B91F52D-2460-47B7-BF13-4135DD061EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B91F52D-2460-47B7-BF13-4135DD061EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B91F52D-2460-47B7-BF13-4135DD061EC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{505CD7DC-6364-419C-8B80-AB847ED19516}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{505CD7DC-6364-419C-8B80-AB847ED19516}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{505CD7DC-6364-419C-8B80-AB847ED19516}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{505CD7DC-6364-419C-8B80-AB847ED19516}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
