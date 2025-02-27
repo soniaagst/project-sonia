@@ -10,7 +10,7 @@ public class Vehicle {
     }
 
     public string Info() {
-        return $"{Type} - {LicensePlate}";
+        return $"{Type} - {LicensePlate} - {Owner}";
     }
 }
 
