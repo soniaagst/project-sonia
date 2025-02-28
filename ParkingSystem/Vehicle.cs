@@ -9,9 +9,10 @@ public class Vehicle {
         Owner = owner;
     }
 
-    public string Info() {
+    public override string ToString()
+    {
         return $"{Type} - {LicensePlate} - {Owner}";
     }
 }
 
-public enum VehicleType {Car, Bike}
+public enum VehicleType {Car, Motorcycle}

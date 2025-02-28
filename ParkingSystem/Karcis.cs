@@ -23,6 +23,6 @@ public class Karcis {
 
     Dictionary<VehicleType, int> HourlyRate = new() {
         {VehicleType.Car, 2_000},
-        {VehicleType.Bike, 1_000}
+        {VehicleType.Motorcycle, 1_000}
     };
 }

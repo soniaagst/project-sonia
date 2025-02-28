@@ -22,7 +22,7 @@ public class Slot {
 
     public void RemoveVehicle() {
         if (IsOccupied == false) {
-            Console.WriteLine("Already empty.");
+            Console.WriteLine("No vehicle to remove.");
         }
         else {
             ParkedVehicle = null;

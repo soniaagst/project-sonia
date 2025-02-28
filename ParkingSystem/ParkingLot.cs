@@ -1,5 +1,6 @@
 public class ParkingLot {
     private List<Slot> Slots = new();
+    private Dictionary<string, Karcis> validKarcis = new();
 
     public ParkingLot(int carSlots, int bikeSlots) {
         int slotNumber = 1;
@@ -8,7 +9,7 @@ public class ParkingLot {
             slotNumber++;
         }
         for (int i = 0; i < bikeSlots; i++) {
-            Slots.Add(new Slot(slotNumber, VehicleType.Bike));
+            Slots.Add(new Slot(slotNumber, VehicleType.Motorcycle));
             slotNumber++;
         }
     }
@@ -22,25 +23,29 @@ public class ParkingLot {
         else {
             freeSpace.ParkVehicle(vehicle);
             Karcis karcis = new(vehicle);
+            validKarcis.Add(vehicle.LicensePlate, karcis);
             Console.WriteLine($"Vehicle {vehicle.LicensePlate} parked at slot #{freeSpace.SlotNumber}. You got a parking ticket!");
             return karcis;
         }
     }
 
     public double? RemoveVehicle(Vehicle vehicle, Karcis karcis) {
-        Slot? occupiedSlot = Slots.Find(slot => slot.ParkedVehicle == vehicle);
-        bool isLicenceMatch = vehicle.LicensePlate == karcis.Vehicle.LicensePlate;
-        if (occupiedSlot == null || isLicenceMatch == false) {
-            Console.WriteLine("Vehicle not found or the ticket doesn't match the vehicle.");
+        bool validated = validKarcis.ContainsKey(vehicle.LicensePlate) && (vehicle.LicensePlate == karcis.Vehicle.LicensePlate);
+        Slot? occupiedSlot = Slots.Find(slot => slot.ParkedVehicle?.LicensePlate == vehicle.LicensePlate);
+
+        if (!validated || occupiedSlot == null) {
+            Console.WriteLine("Invalid ticket or vehicle not found.");
             return null;
         }
         else {
-            occupiedSlot?.RemoveVehicle();
-            Console.WriteLine($"Vehicle {vehicle.LicensePlate} exited.");
+            occupiedSlot.RemoveVehicle();
             karcis.EndParking();
+            validKarcis.Remove(vehicle.LicensePlate);
+            double fee = karcis.CalculateFee();
+
+            Console.WriteLine($"Vehicle {vehicle.LicensePlate} exited.");
             Console.WriteLine($"Enter time: {karcis.EnterTime}");
             Console.WriteLine($"Exit time: {karcis.ExitTime}");
-            double fee = karcis.CalculateFee();
             Console.WriteLine($"Parking fee: Rp{fee}");
             return fee;
         }
