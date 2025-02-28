@@ -13,12 +13,36 @@ public class ParkingLot {
         }
     }
 
-    public void ParkVehicle() {
-        
-         // slot dioccupy (harus kosong dulu), mulai karcis
+    public Karcis? ParkVehicle(Vehicle vehicle) {
+        Slot? freeSpace = Slots.Find(slot => (slot.IsOccupied == false) && (slot.AllowedType == vehicle.Type));
+        if (freeSpace == null) {
+            Console.WriteLine($"No free space for {vehicle.Type}.");
+            return null;
+        }
+        else {
+            freeSpace.ParkVehicle(vehicle);
+            Karcis karcis = new(vehicle);
+            Console.WriteLine($"Vehicle {vehicle.LicensePlate} parked at slot #{freeSpace.SlotNumber}. You got a parking ticket!");
+            return karcis;
+        }
     }
 
-    public void RemoveVehicle() {
-        // remove vehicle dari slot, karcis EndParking, calculatefee
+    public double? RemoveVehicle(Vehicle vehicle, Karcis karcis) {
+        Slot? occupiedSlot = Slots.Find(slot => slot.ParkedVehicle == vehicle);
+        bool isLicenceMatch = vehicle.LicensePlate == karcis.Vehicle.LicensePlate;
+        if (occupiedSlot == null || isLicenceMatch == false) {
+            Console.WriteLine("Vehicle not found or the ticket doesn't match the vehicle.");
+            return null;
+        }
+        else {
+            occupiedSlot?.RemoveVehicle();
+            Console.WriteLine($"Vehicle {vehicle.LicensePlate} exited.");
+            karcis.EndParking();
+            Console.WriteLine($"Enter time: {karcis.EnterTime}");
+            Console.WriteLine($"Exit time: {karcis.ExitTime}");
+            double fee = karcis.CalculateFee();
+            Console.WriteLine($"Parking fee: Rp{fee}");
+            return fee;
+        }
     }
 }
