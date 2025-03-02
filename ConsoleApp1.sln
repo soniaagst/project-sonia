@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delegate", "Delegate\Delega
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventHandling", "EventHandling\EventHandling.csproj", "{AC38D465-1F2B-4FF5-BF15-C45A9FB90A6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperatorOverloading", "OperatorOverloading\OperatorOverloading.csproj", "{8F769DEF-F7B6-4B22-90B8-DDA24C180D90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{AC38D465-1F2B-4FF5-BF15-C45A9FB90A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC38D465-1F2B-4FF5-BF15-C45A9FB90A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC38D465-1F2B-4FF5-BF15-C45A9FB90A6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F769DEF-F7B6-4B22-90B8-DDA24C180D90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F769DEF-F7B6-4B22-90B8-DDA24C180D90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F769DEF-F7B6-4B22-90B8-DDA24C180D90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F769DEF-F7B6-4B22-90B8-DDA24C180D90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
