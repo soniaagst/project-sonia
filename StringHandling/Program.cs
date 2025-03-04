@@ -36,6 +36,3 @@ foreach (string word in words)
     Console.WriteLine($"- {word}");
 }
 Console.WriteLine(string.Join("", words));
-
-
-// Console.WriteLine(Console.Read()); // Console.Read reads the 1st caracter and returns its ascii value (hence int)

@@ -3,6 +3,7 @@ Console.WriteLine(timeSpan);
 Console.WriteLine(TimeSpan.FromHours(2.5));
 Console.WriteLine(TimeSpan.FromMinutes(120));
 Console.WriteLine(TimeSpan.FromSeconds(100_000).TotalDays);
+Console.WriteLine($"The laptop been on for {TimeSpan.FromMilliseconds(Environment.TickCount).TotalDays} days");
 Console.WriteLine(DateTime.Now.AddHours(7.5));
 Console.WriteLine(TimeOnly.FromDateTime(DateTime.Now));
 Console.WriteLine(DateTime.Today);
