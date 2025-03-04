@@ -1,3 +1,5 @@
+using System.Text;
+
 public class FooBar {
     public static void RunVer1(int maxnumber) { // versi 1: langsung print
         for (int num = 1; num <= maxnumber; num++) {
@@ -103,10 +105,10 @@ public class FooBar {
 
         for(int num = 1; num <= maxnumber; num++) {
             bool divisible = false;
-            string word = "";
+            StringBuilder word = new StringBuilder();
             foreach (int key in words.Keys) {
                 if (num % key == 0) {
-                    word = word + words[key];
+                    word.Append(words[key]);
                     divisible = true;
                 }
             }
