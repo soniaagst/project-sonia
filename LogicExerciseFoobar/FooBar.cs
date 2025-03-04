@@ -69,4 +69,50 @@ public class FooBar {
             }
         }
     }
+
+    public static void Foobarjazz(int maxnumber) {
+        Dictionary<int, string> words = new() {
+            {3, "foo"},
+            {5, "bar"},
+            {7,"jazzz"}
+        };
+
+        for (int num = 1; num <= maxnumber; num++) {
+            bool divisible = false;
+            foreach (int key in words.Keys) {
+                if (num % key == 0) {
+                    Console.Write(words[key]);
+                    divisible = true;
+                }
+            }
+            if (divisible == false) {
+                Console.Write(num);
+            }
+            if (num < maxnumber) {
+                Console.Write(", ");
+            }
+        }
+    }
+
+    public static IEnumerable<object> Foobarjazz2(int maxnumber) {
+        Dictionary<int, string> words = new() {
+            {3, "foo"},
+            {5, "bar"},
+            {7,"jazzz"}
+        };
+
+        for(int num = 1; num <= maxnumber; num++) {
+            bool divisible = false;
+            string word = "";
+            foreach (int key in words.Keys) {
+                if (num % key == 0) {
+                    word = word + words[key];
+                    divisible = true;
+                }
+            }
+            
+            if (divisible) yield return word;
+            else yield return num;
+        }
+    }
 }
