@@ -1,0 +1,15 @@
+﻿TimeSpan timeSpan = new TimeSpan(2, 30, 0);
+Console.WriteLine(timeSpan);
+Console.WriteLine(TimeSpan.FromHours(2.5));
+Console.WriteLine(TimeSpan.FromMinutes(120));
+Console.WriteLine(TimeSpan.FromSeconds(100_000).TotalDays);
+Console.WriteLine(DateTime.Now.AddHours(7.5));
+Console.WriteLine(TimeOnly.FromDateTime(DateTime.Now));
+Console.WriteLine(DateTime.Today);
+Console.WriteLine(TimeOnly.FromTimeSpan(TimeSpan.FromHours(2.7)));
+Console.WriteLine(DateTime.Now.ToString("dd-MM-yyy HH:mm:ss"));
+DateOnly dateOnly = new DateOnly(2025, 9, 27);
+Console.WriteLine(dateOnly);
+Console.WriteLine(DateTime.UtcNow);
+Console.WriteLine(DateTimeOffset.Now);
+Console.WriteLine(DateTimeOffset.Now.AddHours(0.5));
