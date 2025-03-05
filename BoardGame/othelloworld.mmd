@@ -1,0 +1,88 @@
+classDiagram
+    OthelloGame <-- Board
+    OthelloGame <-- Player: has 2 (Dictionary)
+    Board <-- Piece
+    Board <-- Location: uses
+    Player <-- Piece: owns
+    Piece <-- Location: placed at
+    PieceColor --> Piece
+
+    class OthelloGame {
+        +Dictionary~PieceColor, Player~ Players
+        +Player CurrentPlayer = Players[PieceColor.Black]
+        +Board Board
+        +StartGame(): void
+        +Func~Location location~ IsValidMove: bool
+        +PlacePiece(): void
+        +FlipPieces(): void
+        +SwitchTurn(): void
+    }
+
+    class Board {
+        +Piece[8][8] Grid
+        +InitBoard(): void
+        +PrintBoard(): void
+        +PlacePiece(Piece piece): void
+        +PieceCounter(Player black, Player white): void
+    }
+
+    class Piece {
+        +PieceColor Color
+        +Location location
+        +Action~Location~ Flip()
+        +IsEmpty(): bool
+    }
+
+    class Player {
+        <<struct>>
+        +PieceColor Color
+        +List~Piece~ Pieces
+        +int NumberOfPieces
+    }
+
+    class Location {
+        <<struct>>
+        +int X
+        +int Y
+    }
+
+    class PieceColor {
+        <<enumeration>>
+        None
+        Black
+        White
+    }
+
+
+%% Rules:
+
+%% 2 players (Black & White), on 8x8 board.
+
+%% Initial board: 4 pieces at the center.
+
+%% Black moves first.
+
+%% Black (White) place a black (white) piece on the board, 
+%% in such a way that there is at least one straight 
+%% (horizontal, vertical, or diagonal) occupied line 
+%% between the new piece and another black (white) piece, 
+%% with one or more contiguous white (black) pieces between them.
+
+%% After placing the piece, 
+%% Black (White) flips all white pieces lying on a straight line
+%% between the new piece and any existing black (white) pieces.
+
+%% All flipped pieces are now black (white).
+
+%% Players alternate taking turns.
+
+%% If a player does not have any valid moves,
+%% play passes back to the other player.
+
+%% When neither player can move, the game ends.
+
+%% A game of Othello may end before the board is completely filled.
+
+%% The player with the most pieces on the board at the end of the game wins.
+
+%% If both players have the same number of pieces, then the game is a draw.
