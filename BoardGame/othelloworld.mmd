@@ -1,42 +1,59 @@
 classDiagram
-    OthelloGame --> Board : manages
-    OthelloGame --> Player : manages
+    OthelloGameController --> Board : manages
+    OthelloGameController --> Player : manages
     Board --> Piece : contains
     Board --> Position : uses
     Player --> Piece : owns
     Player --> PieceColor
     Piece --> PieceColor
 
-    class OthelloGame {
+    class Display {
+        + DisplayBoard(): void
+        + DisplayScores(): void
+        + DisplayGameStatus(): void
+        + DisplayCurrentPlayer(): void
+    }
+
+    class OthelloGameController {
         - Board board
         - Player[] players
         - int currentPlayer
+        + OthelloGameController()
         + StartGame(): void
         + SwitchTurn(): void
         + GetWinner(): Player
+        + EndGame(): void
+        + Func IsValidMove<int, int, Player, bool> ()
+        + PlacePiece(int row, int col, Player player): void
+        + Action<> FlipPieces()
+        + CountPieces(char symbol): int
+    }
+
+    class IBoard {
+        <<Interface>>
+        - Piece[,] grid
+        + Board(int size)
+        + InitializeBoard(): void
     }
 
     class Board {
         - Piece[,] grid
-        + Board()
+        + Board(int size)
         + InitializeBoard(): void
-        + PrintBoard(): void
-        + Func IsValidMove<int, int, Player, bool> ()
+        + GetBoard()
         + GetFlippablePieces(int row, int col, Player player): bool
         + GetValidMoves(Player player): List~Position~
-        + PlacePiece(int row, int col, Player player): void
-        + CountPieces(char symbol): int
     }
 
     class Piece {
         - PieceColor Color
-        - Position position
+        + Position Position
         + Piece(PieceColor color)
-        + Action<> Flip()
     }
 
     class Player {
         - PieceColor Color
+        - int score
         + Player(PieceColor color)
         + GetNumberOfPieces(Board board): int
     }
@@ -48,8 +65,7 @@ classDiagram
     }
 
     class PieceColor {
-        <<enumeration>>
-        Empty
+        <<enum>>
         Black
         White
     }
