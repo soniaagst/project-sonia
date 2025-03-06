@@ -1,54 +1,55 @@
 classDiagram
-    OthelloGame <-- Board
-    OthelloGame <-- Player: has 2 (Dictionary)
-    Board <-- Piece
-    Board <-- Location: uses
-    Player <-- Piece: owns
-    Piece <-- Location: placed at
-    PieceColor --> Piece
+    OthelloGame --> Board : manages
+    OthelloGame --> Player : manages
+    Board --> Piece : contains
+    Board --> Position : uses
+    Player --> Piece : owns
+    Player --> PieceColor
+    Piece --> PieceColor
 
     class OthelloGame {
-        +Dictionary~PieceColor, Player~ Players
-        +Player CurrentPlayer = Players[PieceColor.Black]
-        +Board Board
-        +StartGame(): void
-        +Func~Location location~ IsValidMove: bool
-        +PlacePiece(): void
-        +FlipPieces(): void
-        +SwitchTurn(): void
+        - Board board
+        - Player[] players
+        - int currentPlayer
+        + StartGame(): void
+        + SwitchTurn(): void
+        + GetWinner(): Player
     }
 
     class Board {
-        +Piece[8][8] Grid
-        +InitBoard(): void
-        +PrintBoard(): void
-        +PlacePiece(Piece piece): void
-        +PieceCounter(Player black, Player white): void
+        - Piece[,] grid
+        + Board()
+        + InitializeBoard(): void
+        + PrintBoard(): void
+        + Func IsValidMove<int, int, Player, bool> ()
+        + GetFlippablePieces(int row, int col, Player player): bool
+        + GetValidMoves(Player player): List~Position~
+        + PlacePiece(int row, int col, Player player): void
+        + CountPieces(char symbol): int
     }
 
     class Piece {
-        +PieceColor Color
-        +Location location
-        +Action~Location~ Flip()
-        +IsEmpty(): bool
+        - PieceColor Color
+        - Position position
+        + Piece(PieceColor color)
+        + Action<> Flip()
     }
 
     class Player {
-        <<struct>>
-        +PieceColor Color
-        +List~Piece~ Pieces
-        +int NumberOfPieces
+        - PieceColor Color
+        + Player(PieceColor color)
+        + GetNumberOfPieces(Board board): int
     }
 
-    class Location {
+    class Position {
         <<struct>>
-        +int X
-        +int Y
+        int Row
+        int Col
     }
 
     class PieceColor {
         <<enumeration>>
-        None
+        Empty
         Black
         White
     }
