@@ -1,11 +1,13 @@
 classDiagram
     OthelloGameController --> Board : manages
     OthelloGameController --> Player : manages
+    GameState -- OthelloGameController
+    Display -- OthelloGameController
     Board --> Piece : contains
     Board --> Position : uses
     Player --> Piece : owns
-    Player --> PieceColor
-    Piece --> PieceColor
+    Player -- PieceColor
+    Piece -- PieceColor
 
     class Display {
         + DisplayBoard(): void
@@ -15,47 +17,49 @@ classDiagram
     }
 
     class OthelloGameController {
-        - Board board
-        - Player[] players
-        - int currentPlayer
-        + OthelloGameController()
+        - Board _board
+        - Player[] _players
+        - int _currentPlayer
+        - GameState _gameState
+        + OthelloGameController(Board board, Player[] players)
         + StartGame(): void
         + SwitchTurn(): void
         + GetWinner(): Player
-        + EndGame(): void
-        + Func IsValidMove<int, int, Player, bool> ()
-        + PlacePiece(int row, int col, Player player): void
-        + Action<> FlipPieces()
-        + CountPieces(char symbol): int
-    }
-
-    class IBoard {
-        <<Interface>>
-        - Piece[,] grid
-        + Board(int size)
-        + InitializeBoard(): void
+        - Func~int, int, Player, bool~ IsValidMove
+        + Action~Board~ OnBoardUpdated
+        + Action~GameState~ OnGameOver
+        - PlacePiece(int row, int col, Player player): bool
+        - Func~~ FlipPieces
+        + CheckGameOver(): bool
     }
 
     class Board {
-        - Piece[,] grid
+        - Square[,] grid
         + Board(int size)
         + InitializeBoard(): void
-        + GetBoard()
-        + GetFlippablePieces(int row, int col, Player player): bool
+        + GetBoard(): Square[,]
+        + GetFlippablePieces(int row, int col, Player player): List~Position~
         + GetValidMoves(Player player): List~Position~
+    }
+
+    class Square {
+        + bool IsOccupied
+        - Piece piece
+        - Position Position
+        + Square(Position position)
     }
 
     class Piece {
         - PieceColor Color
-        + Position Position
-        + Piece(PieceColor color)
+        - Position Position
+        + Piece(PieceColor color, Position position)
     }
 
     class Player {
         - PieceColor Color
-        - int score
+        - List~Piece~ pieces
         + Player(PieceColor color)
-        + GetNumberOfPieces(Board board): int
+        + GetScore( ): int
     }
 
     class Position {
@@ -68,6 +72,12 @@ classDiagram
         <<enum>>
         Black
         White
+    }
+
+    class GameState {
+        <<enum>>
+        Playing
+        Finished
     }
 
 
