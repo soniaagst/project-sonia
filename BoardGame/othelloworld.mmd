@@ -1,71 +1,78 @@
 classDiagram
-    OthelloGameController --> Board : manages
-    OthelloGameController --> Player : manages
-    GameState -- OthelloGameController
-    Display -- OthelloGameController
-    Board --> Piece : contains
-    Board --> Position : uses
+    GameController --> Board : manages
+    GameController --> Player : manages
+    GameState -- GameController
+    Display <-- GameController
+    Board *-- Piece : contains
+    Position <-- Board : uses
     Player --> Piece : owns
     Player -- PieceColor
     Piece -- PieceColor
 
     class Display {
-        + DisplayBoard(): void
-        + DisplayScores(): void
-        + DisplayGameStatus(): void
-        + DisplayCurrentPlayer(): void
+        <<static>>
+        + DisplayBoard(Board board, List~Position~ validmoves): void
+        + DisplayMessage(string message): void
     }
+    note for Display "Message example:
+    Enter 'exit' to quit the game.
+    X = 2 | O = 3
+    X turn, enter your move < row col >: 
+    "
 
-    class OthelloGameController {
+    class GameController {
         - Board _board
         - Player[] _players
         - int _currentPlayer
         - GameState _gameState
-        + OthelloGameController(Board board, Player[] players)
-        + StartGame(): void
-        + SwitchTurn(): void
-        + GetWinner(): Player
-        - Func~int, int, Player, bool~ IsValidMove
+        + GameController(Board board)
+        + Play(): void
+        - SwitchTurn(): void
+        - GetAnyFlippablePieces(Player player): List~Position~
+        - GetValidMoves(Player player): List~Position~
+        - IsValidMove(int row, int col, Player player): bool
+        - Func~int row, int col~ WithinBoardBound: bool
+        - TryParseMove(string input, out int row, out int col): bool
+        - PlacePiece(int row, int col, Player player): bool
+        - CountScores(): (int blackCount, int whiteCount) \\ loop the piece in _board
         + Action~Board~ OnBoardUpdated
         + Action~GameState~ OnGameOver
-        - PlacePiece(int row, int col, Player player): bool
-        - Func~~ FlipPieces
-        + CheckGameOver(): bool
     }
+    note for GameController "Player instantiated immediately in the constructor bcs there r always only 2 players.
+    GetAnyFlippablePieces() used inside GetValidMoves();
+    GetValidMoves() used inside IsValidMove(), it also can be used for showing all possible moves on the board;
+    IsValidMove() used inside PlacePiece(); PlacePiece() used inside Play().
+    PlacePiece() has mechanism for flipping all the pieces needed to be flipped when placement happens
+    and it calls piece.Flip() for each pieces in question.
+    "
 
     class Board {
-        - Square[,] grid
-        + Board(int size)
-        + InitializeBoard(): void
-        + GetBoard(): Square[,]
-        + GetFlippablePieces(int row, int col, Player player): List~Position~
-        + GetValidMoves(Player player): List~Position~
+        - int _size
+        - Piece?[,] _grid
+        + Board(int size = 8)
+        - InitBoard(): void
+        + GetBoard(): Piece?[,]
     }
-
-    class Square {
-        + bool IsOccupied
-        - Piece piece
-        - Position Position
-        + Square(Position position)
-    }
+    note for Board "InitBoard() called in constructor.
+    Piece in _grid is nullable."
 
     class Piece {
-        - PieceColor Color
-        - Position Position
-        + Piece(PieceColor color, Position position)
+        - PieceColor _color
+        + Piece(PieceColor color)
+        + Flip(): void
     }
 
     class Player {
-        - PieceColor Color
-        - List~Piece~ pieces
+        - PieceColor _color
+        + int Scores
         + Player(PieceColor color)
-        + GetScore( ): int
     }
 
     class Position {
         <<struct>>
         int Row
         int Col
+        Position(int row, int col)
     }
 
     class PieceColor {
@@ -73,6 +80,7 @@ classDiagram
         Black
         White
     }
+    %% Black marked with X, White marked with O
 
     class GameState {
         <<enum>>
@@ -85,7 +93,9 @@ classDiagram
 
 %% 2 players (Black & White), on 8x8 board.
 
-%% Initial board: 4 pieces at the center.
+%% Initial board: 4 pieces at the center with this configuration:
+%% W B
+%% B W
 
 %% Black moves first.
 
