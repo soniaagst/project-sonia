@@ -10,7 +10,7 @@ public class Slot {
         IsOccupied = false;
     }
     
-    public void ParkVehicle(Vehicle vehicle) {
+    internal void ParkVehicle(Vehicle vehicle) {
         if (IsOccupied || vehicle.Type != AllowedType) {
             Console.WriteLine("Cannot park here.");
         }
@@ -20,7 +20,7 @@ public class Slot {
         }
     }
 
-    public void RemoveVehicle() {
+    internal void RemoveVehicle() {
         if (IsOccupied == false) {
             Console.WriteLine("No vehicle to remove.");
         }

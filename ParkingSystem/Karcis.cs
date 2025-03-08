@@ -8,15 +8,15 @@ public class Karcis {
         EnterTime =  DateTime.Now;
     }
 
-    public void EndParking() {
+    internal void EndParking() {
         ExitTime = DateTime.Now.AddHours(Random.Shared.Next(1,13));
     }
 
-    public TimeSpan GetDuration() {
+    internal TimeSpan GetDuration() {
         return (ExitTime ?? DateTime.Now) - EnterTime;
     }
 
-    public double CalculateFee() {
+    internal double CalculateFee() {
         double duration = GetDuration().TotalHours;
         return double.Round(duration * HourlyRate[Vehicle.Type], 2);
     }

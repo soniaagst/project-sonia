@@ -1,8 +1,8 @@
-public class ParkingLot {
+public sealed class ParkingLot {
     private List<Slot> Slots = new();
     private Dictionary<string, Karcis> validKarcis = new();
 
-    public ParkingLot(int carSlots, int bikeSlots) {
+    public ParkingLot(int carSlots = 30, int bikeSlots = 800) {
         int slotNumber = 1;
         for (int i = 0; i < carSlots; i++) {
             Slots.Add(new Slot(slotNumber, VehicleType.Car));
@@ -14,7 +14,7 @@ public class ParkingLot {
         }
     }
 
-    public Karcis? ParkVehicle(Vehicle vehicle) {
+    internal Karcis? ParkVehicle(Vehicle vehicle) {
         Slot? freeSpace = Slots.Find(slot => (slot.IsOccupied == false) && (slot.AllowedType == vehicle.Type));
         if (freeSpace == null) {
             Console.WriteLine($"No free space for {vehicle.Type}.");
@@ -29,7 +29,7 @@ public class ParkingLot {
         }
     }
 
-    public double? RemoveVehicle(Vehicle vehicle, Karcis karcis) {
+    internal double? RemoveVehicle(Vehicle vehicle, Karcis karcis) {
         bool validated = validKarcis.ContainsKey(vehicle.LicensePlate) && (vehicle.LicensePlate == karcis.Vehicle.LicensePlate);
         Slot? occupiedSlot = Slots.Find(slot => slot.ParkedVehicle?.LicensePlate == vehicle.LicensePlate);
 
