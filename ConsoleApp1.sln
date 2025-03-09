@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enums", "Enums\Enums.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilityClasses", "UtilityClasses\UtilityClasses.csproj", "{CB8A34C0-39C2-450C-95B9-0EBCDF4C01F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingSystemAPI", "ParkingSystemAPI\ParkingSystemAPI.csproj", "{17EEDEC7-F0C5-421D-BF91-BBAE40FE2B36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,5 +104,9 @@ Global
 		{CB8A34C0-39C2-450C-95B9-0EBCDF4C01F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB8A34C0-39C2-450C-95B9-0EBCDF4C01F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB8A34C0-39C2-450C-95B9-0EBCDF4C01F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17EEDEC7-F0C5-421D-BF91-BBAE40FE2B36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17EEDEC7-F0C5-421D-BF91-BBAE40FE2B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17EEDEC7-F0C5-421D-BF91-BBAE40FE2B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17EEDEC7-F0C5-421D-BF91-BBAE40FE2B36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
