@@ -25,18 +25,16 @@ classDiagram
         - Player[] _players
         - int _currentPlayer
         - GameState _gameState
+        - Action SwitchTurn
+        - Func~int row, int col~ WithinBoardBound: bool
         + GameController(Board board)
         + Play(): void
-        - SwitchTurn(): void
         - GetAnyFlippablePieces(Player player): List~Position~
         - GetValidMoves(Player player): List~Position~
         - IsValidMove(int row, int col, Player player): bool
-        - Func~int row, int col~ WithinBoardBound: bool
         - TryParseMove(string input, out int row, out int col): bool
         - PlacePiece(int row, int col, Player player): bool
         - CountScores(): (int blackCount, int whiteCount) \\ loop the piece in _board
-        + Action~Board~ OnBoardUpdated
-        + Action~GameState~ OnGameOver
     }
     note for GameController "Player instantiated immediately in the constructor bcs there r always only 2 players.
     GetAnyFlippablePieces() used inside GetValidMoves();
@@ -58,8 +56,8 @@ classDiagram
 
     class Piece {
         - PieceColor _color
+        + Action Flip;
         + Piece(PieceColor color)
-        + Flip(): void
     }
 
     class Player {
