@@ -21,8 +21,8 @@ classDiagram
         - Player[] _players
         - int _currentPlayer
         - GameState _gameState
-        - Action SwitchTurn
-        - Func~int row, int col~ WithinBoardBound: bool
+        - Action _switchTurn
+        - Func~int row, int col~ _withinBoardBound: bool
         + GameController(Board board)
         + Play(): void
         - PlacePiece(int row, int col, Player player): bool
