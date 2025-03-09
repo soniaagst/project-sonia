@@ -2,7 +2,7 @@ classDiagram
     GameController --> Board : manages
     GameController --> Player : manages
     GameState -- GameController
-    Display <-- GameController
+    GameController --> Display
     Board *-- Piece : contains
     Position <-- Board : uses
     Player --> Piece : owns
@@ -13,12 +13,8 @@ classDiagram
         <<static>>
         + DisplayBoard(Board board, List~Position~ validmoves): void
         + DisplayMessage(string message): void
+        + AskNonNullInput( ): void
     }
-    note for Display "Message example:
-    Enter 'exit' to quit the game.
-    X = 2 | O = 3
-    X turn, enter your move < row col >: 
-    "
 
     class GameController {
         - Board _board
@@ -29,19 +25,18 @@ classDiagram
         - Func~int row, int col~ WithinBoardBound: bool
         + GameController(Board board)
         + Play(): void
-        - GetAnyFlippablePieces(Player player): List~Position~
-        - GetValidMoves(Player player): List~Position~
-        - IsValidMove(int row, int col, Player player): bool
-        - TryParseMove(string input, out int row, out int col): bool
         - PlacePiece(int row, int col, Player player): bool
-        - CountScores(): (int blackCount, int whiteCount) \\ loop the piece in _board
+        - GetFlippablePieces(int row, int col, Player player): List~Position~
+        - IsValidMove(int row, int col, Player player): bool
+        - GetValidMoves(Player player): List~Position~
+        - TryParseMove(string input, out int row, out int col): bool
+        - CountScores(): (int blackCount, int whiteCount)
     }
-    note for GameController "Player instantiated immediately in the constructor bcs there r always only 2 players.
-    GetAnyFlippablePieces() used inside GetValidMoves();
-    GetValidMoves() used inside IsValidMove(), it also can be used for showing all possible moves on the board;
-    IsValidMove() used inside PlacePiece(); PlacePiece() used inside Play().
-    PlacePiece() has mechanism for flipping all the pieces needed to be flipped when placement happens
-    and it calls piece.Flip() for each pieces in question.
+    note for GameController "Player instantiated immediately in the constructor bcs there are always only 2 players.
+    GetFlippablePieces(): Supposing user would make move in (row, col), list every piece that should be flipped.
+    IsValidMove(): If a move (row, col) has flippablepieces, it's valid.
+    GetValidMoves(): Loop the Positions in the board, and list every move that IsValidMove.
+    PlacePiece(): If a move IsValidMove, place the piece and piece.Flip() all the pieces from GetFlippablePieces.
     "
 
     class Board {
@@ -56,7 +51,7 @@ classDiagram
 
     class Piece {
         - PieceColor _color
-        + Action Flip;
+        + Action Flip
         + Piece(PieceColor color)
     }
 
