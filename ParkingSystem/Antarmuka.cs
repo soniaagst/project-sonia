@@ -6,18 +6,19 @@ public class AntarmukaVehicle {
         _parkingLot = parkingLot;
     }
 
-    public void AddVehicle(VehicleType vehicleType, string licensePlate, string owner) {
+    public void RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner) {
         Vehicle vehicle = new (vehicleType, licensePlate, owner);
         _vehicles.Add(vehicle);
     }
 
-    public List<Vehicle> ReadAll() {
+    public List<Vehicle> GetVehiclesData() {
         return _vehicles;
     }
 
     public List<Vehicle> SearchbyOwner(string owner) {
         return _vehicles.Where(vehicle => vehicle.Owner == owner).ToList();
     }
+    
     public Vehicle? SearchByLicensePlate(string licensePlate) {
         return _vehicles.FirstOrDefault(vehicle => vehicle.LicensePlate == licensePlate);
     }
@@ -37,5 +38,9 @@ public class AntarmukaVehicle {
         Vehicle? vehicle = SearchByLicensePlate(licensePlate);
         if (vehicle is null) return null;
         return  _parkingLot.ParkVehicle(vehicle);
+    }
+
+    public double? UnparkVehicle(Vehicle vehicle, Karcis karcis) {
+        return _parkingLot.RemoveVehicle(vehicle, karcis);
     }
 }
