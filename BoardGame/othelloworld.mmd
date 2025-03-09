@@ -10,7 +10,6 @@ classDiagram
     Piece -- PieceColor
 
     class Display {
-        <<static>>
         + DisplayBoard(Board board, List~Position~ validmoves): void
         + DisplayMessage(string message): void
         + AskNonNullInput( ): void
@@ -21,16 +20,17 @@ classDiagram
         - Player[] _players
         - int _currentPlayer
         - GameState _gameState
+        - Display _display
         - Action _switchTurn
-        - Func~int row, int col~ _withinBoardBound: bool
-        + GameController(Board board)
+        - Func~int row, int col~ _isInsideBoard: bool
+        + GameController(Board board, Display display)
         + Play(): void
         - PlacePiece(int row, int col, Player player): bool
         - GetFlippablePieces(int row, int col, Player player): List~Position~
         - IsValidMove(int row, int col, Player player): bool
         - GetValidMoves(Player player): List~Position~
         - TryParseMove(string input, out int row, out int col): bool
-        - CountScores(): (int blackCount, int whiteCount)
+        - GetScoreCounts(): (int blackCount, int whiteCount)
     }
     note for GameController "Player instantiated immediately in the constructor bcs there are always only 2 players.
     GetFlippablePieces(): Supposing user would make move in (row, col), list every piece that should be flipped.
@@ -50,14 +50,14 @@ classDiagram
     Piece in _grid is nullable."
 
     class Piece {
-        - PieceColor _color
-        + Action Flip
+        + PieceColor Color \\get; private set;
+        + Action Flip \\get;
         + Piece(PieceColor color)
     }
 
     class Player {
-        - PieceColor _color
-        + int Scores
+        + PieceColor Color \\get;
+        + int Score
         + Player(PieceColor color)
     }
 
