@@ -1,36 +1,49 @@
 classDiagram
-    GameController --> Board : manages
-    GameController --> Player : manages
+    GameController --> IBoard : manages
+    GameController --> IPlayer : manages
+    GameController --> IPiece : manages placement
+    GameController --> IDisplay
     GameState -- GameController
-    GameController --> Display
     Board *-- Piece : contains
-    Position <-- Board : uses
+    Board --> Position : uses
     Player --> Piece : owns
-    Player -- PieceColor
     Piece -- PieceColor
+    IDisplay <|-- Display
+    IBoard <|-- Board
+    IPlayer <|-- Player
+    IPiece <|-- Piece
+    GameManager --> GameController
 
     class Display {
-        + DisplayBoard(Board board, List~Position~ validmoves): void
+        + DisplayBoard(Board board, List~Position~ validMoves): void
         + DisplayMessage(string message): void
         + AskNonNullInput( ): void
     }
 
+    class GameManager {
+        - GameController _gameController
+        + GameManager(Board board, Display display)
+        + Play( ): void
+    }
+    note for GameManager "GameController instantiated in GameManager constructor.
+    For further improvement, this can have options like:
+    NewGame(), RestartGame(), SaveGame(), Exit()"
+
     class GameController {
-        - Board _board
-        - Player[] _players
+        - IBoard _board
+        - IPlayer[] _players
         - int _currentPlayer
         - GameState _gameState
-        - Display _display
-        - Action _switchTurn
-        - Func~int row, int col~ _isInsideBoard: bool
-        + GameController(Board board, Display display)
-        + Play(): void
-        - PlacePiece(int row, int col, Player player): bool
-        - GetFlippablePieces(int row, int col, Player player): List~Position~
-        - IsValidMove(int row, int col, Player player): bool
-        - GetValidMoves(Player player): List~Position~
-        - TryParseMove(string input, out int row, out int col): bool
-        - GetScoreCounts(): (int blackCount, int whiteCount)
+        - IDisplay _display
+        + Action SwitchTurn
+        + Func~int row, int col~ IsInsideBoard: bool
+        + GameController(IBoard board, IDisplay display)
+        + PlacePiece(int row, int col, Player player): bool
+        + GetFlippablePieces(int row, int col, Player player): List~Position~
+        + IsValidMove(int row, int col, Player player): bool
+        + GetValidMoves(Player player): List~Position~
+        + TryParseMove(string input, out int row, out int col): bool
+        + GetScoreCounts( ): (int blackCount, int whiteCount)
     }
     note for GameController "Player instantiated immediately in the constructor bcs there are always only 2 players.
     GetFlippablePieces(): Supposing user would make move in (row, col), list every piece that should be flipped.
@@ -46,8 +59,6 @@ classDiagram
         - InitBoard(): void
         + GetBoard(): Piece?[,]
     }
-    note for Board "InitBoard() called in constructor.
-    Piece in _grid is nullable."
 
     class Piece {
         + PieceColor Color \\get; private set;
@@ -81,14 +92,38 @@ classDiagram
         Finished
     }
 
+    class IDisplay {
+        <<Interface>>
+        + DisplayBoard(Board, List~Position~)
+        + DisplayMessage(string)
+        + AskNonNullInput()
+    }
+
+    class IBoard {
+        <<Interface>>
+        + GetBoard(): Piece?[,]
+    }
+
+    class IPiece {
+        <<Interface>>
+        + PieceColor Color
+        + Action Flip
+    }
+
+    class IPlayer {
+        <<Interface>>
+        + PieceColor Color
+        + int Score
+    }
+
 
 %% Rules:
 
 %% 2 players (Black & White), on 8x8 board.
 
 %% Initial board: 4 pieces at the center with this configuration:
-%% W B
-%% B W
+%% W B      or      O X
+%% B W              X O
 
 %% Black moves first.
 
