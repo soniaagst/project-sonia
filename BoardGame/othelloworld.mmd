@@ -26,7 +26,8 @@ classDiagram
         + Play( ): void
     }
     note for GameManager "GameController instantiated in GameManager constructor.
-    For further improvement, this can have options like:
+    GameManager.Play() calls GameController.Play().
+    For further expansion, this can have options like:
     NewGame(), RestartGame(), SaveGame(), Exit()"
 
     class GameController {
@@ -38,10 +39,11 @@ classDiagram
         + Action SwitchTurn
         + Func~int row, int col~ IsInsideBoard: bool
         + GameController(IBoard board, IDisplay display)
-        + PlacePiece(int row, int col, Player player): bool
-        + GetFlippablePieces(int row, int col, Player player): List~Position~
-        + IsValidMove(int row, int col, Player player): bool
-        + GetValidMoves(Player player): List~Position~
+        + Play( ): void
+        + PlacePiece(int row, int col, IPlayer player): bool
+        + GetFlippablePieces(int row, int col, IPlayer player): List~Position~
+        + IsValidMove(int row, int col, IPlayer player): bool
+        + GetValidMoves(IPlayer player): List~Position~
         + TryParseMove(string input, out int row, out int col): bool
         + GetScoreCounts( ): (int blackCount, int whiteCount)
     }
@@ -101,7 +103,7 @@ classDiagram
 
     class IBoard {
         <<Interface>>
-        + GetBoard(): Piece?[,]
+        + GetBoard(): IPiece?[,]
     }
 
     class IPiece {
