@@ -11,7 +11,7 @@ public class Display {
                     Console.Write(" ・");
                 }
                 else {
-                    Piece piece = board.GetBoard()[row, col];
+                    Piece piece = board.GetBoard()[row, col]!;
                     if (piece!.Color is PieceColor.White) {
                         if (piece is Pawn) Console.Write(" ♙ ");
                         if (piece is Knight) Console.Write(" ♘ ");
@@ -40,7 +40,7 @@ public class Display {
 
     public void AskNonNullInput(string? message = null) {
         Console.Write(message);
-        string input = Console.ReadLine();
+        string? input = Console.ReadLine();
         while (string.IsNullOrEmpty(input)) {
             Console.WriteLine("Input cannot empty. Try again.");
             Console.Write(message);
