@@ -34,6 +34,10 @@ public class GameController {
         _display = display;
     }
 
+    public void Play() {}
+    public void Move() {}
+    public void Kill() {}
+
     public bool IsValidMove(Position currentPosition, Position newPosition) {
         Piece? piece = _board.GetPieceAt(currentPosition);
         if (piece is not null && piece.IsValidMove(newPosition)) {
@@ -41,6 +45,4 @@ public class GameController {
         }
         return false;
     }
-    public void Move() {}
-    public void Kill() {}
 }

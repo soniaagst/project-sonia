@@ -37,4 +37,11 @@ public class Board {
     public Piece? GetPieceAt(Position position) {
         return _grid[position.Row, position.Col];
     }
+
+    public List<Position> GetValidMoves(Piece piece, Position currentPosition) {
+        List<Position> newPositions = new();
+        // 
+        piece.ValidMoves = newPositions;
+        return newPositions;
+    }
 }
