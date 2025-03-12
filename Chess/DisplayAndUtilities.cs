@@ -38,8 +38,10 @@ public class Display {
     public void DisplayMessage(string message) {
         Console.WriteLine(message);
     }
+}
 
-    public void AskNonNullInput(string? message = null) {
+public static class Utility {
+    public static void AskNonNullInput(string? message = null) {
         Console.Write(message);
         string? input = Console.ReadLine();
         while (string.IsNullOrEmpty(input)) {
@@ -48,4 +50,35 @@ public class Display {
             input = Console.ReadLine();
         }
     }
+
+    // public static bool TryParseInput(out Movement movement) {
+    //     // split positions apart on ' '
+    //     // check if they're valid position type
+    //     // check if out of board
+    //     return true;
+    // }
+}
+
+public enum PieceColor {
+    White, Black
+}
+
+public enum GameStatus {
+    Running, Finished
+}
+
+public struct Position {
+    public int Row;
+    public int Col;
+    public Position(int row, int col) {
+        Row = row; Col = col;
+    }
+}
+
+public enum PromoteOption {
+    Queen, Rook, Bishop, Knight
+}
+
+public enum PlayerStatus {
+    Normal, Checked, Checkmate, Won, Stalemate, Draw, Resigned
 }
