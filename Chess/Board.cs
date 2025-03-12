@@ -42,40 +42,37 @@ public class Board {
         return _grid[position.Row, position.Col];
     }
 
-    public List<Position> GetValidMoves(Piece piece, Position currentPosition) {
-        List<Position> newPositions = new();
-        // 
-        piece.ValidMoves = newPositions;
-        return newPositions;
-    }
-
-    public void MovePiece(Piece piece, Position currentPosition, Position newPosition, out Position? lastMovementOrigin) {
+    public bool MovePiece(Position currentPosition, Position newPosition, out Position? lastMovementOrigin) {
+        Piece? piece = GetPieceAt(currentPosition);
         if (piece is Pawn) {
             int vertDistance = Math.Abs(newPosition.Row - currentPosition.Row);
             int horiDistance = Math.Abs(newPosition.Col - currentPosition.Col);
             if (vertDistance == 1 && horiDistance == 1) {
-                Piece? pieceToKill = GetPieceAt(newPosition);
-                if (pieceToKill is not null && pieceToKill.Color != piece.Color) {
-                    piece.Kill(pieceToKill);
+                Piece? targetPiece = GetPieceAt(newPosition);
+                if (targetPiece is not null && targetPiece.Color != piece.Color) {
+                    Piece.Kill(targetPiece);
                     lastMovementOrigin = currentPosition;
                     swap(currentPosition, newPosition);
+                    return true;
                 }
-                else lastMovementOrigin = null;
+                else {lastMovementOrigin = null; return false;}
             }
             else if(piece.Move(newPosition, out lastMovementOrigin)) {
                 swap(currentPosition, newPosition);
+                return true;
             }
+            else {lastMovementOrigin = null; return false;}
         }
-        else {
-            if(piece.Move(newPosition, out lastMovementOrigin)) {
-                swap(currentPosition, newPosition);
-            }
+        else if(piece!.Move(newPosition, out lastMovementOrigin)) {
+            swap(currentPosition, newPosition);
+            return true;
         }
+        else {lastMovementOrigin = null; return false;}
     }
 
-    public void KillPiece(Piece pieceWhoKill, Piece pieceToKill) {
-        Position position = pieceToKill.CurrentPosition;
-        pieceWhoKill.Kill(pieceToKill);
+    public void KillPiece(Piece targetPiece) {
+        Position position = targetPiece.CurrentPosition;
+        Piece.Kill(targetPiece);
         _grid[position.Row, position.Col] = null;
     }
 }

@@ -4,6 +4,7 @@ public class GameController {
     private List<Player> _players = new();
     private int _currentTurn;
     private Display _display;
+    private Action switchPlayer;
 
     public GameController(Display display) {
         _gameStatus = GameStatus.Running;
@@ -12,6 +13,7 @@ public class GameController {
         _players.Add(new Player("BlackPlayer", PieceColor.Black));
         _currentTurn = 0;
         _display = display;
+        switchPlayer = () => { _currentTurn = Math.Abs(_currentTurn - 1); };
     }
 
     public void Play() {
@@ -35,16 +37,14 @@ public class GameController {
             // show the winner or player states if there's no winner
     }
 
-    public void Move(Movement movement) {
+    private void Move(Position currentPos, Position newPos, Player player) {
         // check validity for specific piece type
         // check for special movements for specific piece type (castling, en passant)
         // if it kills, Kill
         // move (swap the piece location, clear the old location)
     }
 
-    public void Kill() {}
-
-    public bool IsValidMove(Position currentPosition, Position newPosition) {
+    private bool IsValidMove(Position currentPosition, Position newPosition) {
         Piece? piece = _board.GetPieceAt(currentPosition);
         if (piece is not null && piece.IsValidMove(newPosition)) {
             return true;

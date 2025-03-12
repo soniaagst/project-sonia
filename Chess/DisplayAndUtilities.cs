@@ -51,11 +51,11 @@ public static class Utility {
         }
     }
 
-    // public static bool TryParseInput(out Movement movement) {
+    // public static (Position currentPos, Position newPos) TryParseInput() {
     //     // split positions apart on ' '
     //     // check if they're valid position type
     //     // check if out of board
-    //     return true;
+    //     return ;
     // }
 }
 
