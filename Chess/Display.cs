@@ -30,8 +30,9 @@ public class Display {
                     }
                 }
             }
-            Console.WriteLine();
+            Console.WriteLine($" {8-row}");
         }
+        Console.WriteLine("  A  B  C  D  E  F  G  H  ");
     }
 
     public void DisplayMessage(string message) {
