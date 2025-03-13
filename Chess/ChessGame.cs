@@ -17,10 +17,15 @@ public class GameController {
     }
 
     public void Play() {
+        Position? lastMovementOrigin = null;
+        while (_gameStatus == GameStatus.Running) {
+            _display.DisplayBoard(_board, lastMovementOrigin);
+            _display.DisplayMessage($"Enter 'exit' to quit the game. \n{_players[_currentTurn].ToString} turn, enter your move: ");
+        }
         // while the game is running:
             // check if the current player has valid moves
             // show the board
-            // show message "Enter 'exit' to quit the game. White turn, enter your move (ex.: b1 c3) "
+            // show message "Enter 'exit' to quit the game. White turn, enter your move (ex.: B1 C3) "
             // check if the input is 'exit'
             // try parse the input into a Movement
             // find the piece to move on the board (old position)
@@ -46,9 +51,36 @@ public class GameController {
 
     private bool IsValidMove(Position currentPosition, Position newPosition) {
         Piece? piece = _board.GetPieceAt(currentPosition);
-        if (piece is not null && piece.IsValidMove(newPosition)) {
-            return true;
+        if (piece is not null) {
+            List<Position> validMoves = piece.GetValidMoves(_board);
+            if (validMoves.Contains(newPosition)) return true;
         }
         return false;
     }
+
+    public void Move(Position currentPosition, Position newPosition) {
+    if (_board.MovePiece(currentPosition, newPosition, out Piece? promotedPawn)) {
+        if (promotedPawn is Pawn pawn) {
+            HandlePromotion(pawn);
+        }
+        switchPlayer();
+    }
+}
+
+private void HandlePromotion(Pawn pawn) {
+    PromoteOption choice = _display.AskPromotionChoice();
+    Piece promotedPiece = CreatePromotedPiece(choice, pawn.Color, pawn.CurrentPosition);
+    _board.ReplacePiece(pawn, promotedPiece);
+}
+
+private Piece CreatePromotedPiece(PromoteOption choice, PieceColor color, Position position) {
+    return choice switch {
+        PromoteOption.Queen => new Queen(color, position),
+        PromoteOption.Rook => new Rook(color, position),
+        PromoteOption.Bishop => new Bishop(color, position),
+        PromoteOption.Knight => new Knight(color, position),
+        _ => throw new InvalidOperationException("Invalid promotion choice")
+    };
+}
+
 }
