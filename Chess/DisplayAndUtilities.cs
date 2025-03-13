@@ -38,9 +38,15 @@ public class Display {
     public void DisplayMessage(string message) {
         Console.WriteLine(message);
     }
-}
 
-public static class Utility {
+    public PromoteOption AskPromotionChoice() {
+        DisplayMessage("Pawn promoted! Options:\n (0)Queen\n (1)Rook\n (2)Bishop \n (3)Knight");
+        string choicestr = AskNonNullInput("Choose your promotion (the default is 0)");
+        int choice;
+        int.TryParse(choicestr, out choice);
+        return (PromoteOption)choice;
+    }
+
     private static string AskNonNullInput(string? message = null) {
         Console.Write(message);
         string? input = Console.ReadLine();
@@ -52,7 +58,7 @@ public static class Utility {
         return input;
     }
 
-    public static (Position, Position) ParseInput(string message) {
+    public static (Position, Position) ParseInputToMove(string message) {
         string input = AskNonNullInput(message);
         while (input.Split(' ').Count() != 2) {
             Console.WriteLine("Invalid input. Try again.");
@@ -73,16 +79,11 @@ public static class Utility {
             positions[i].Row = row; positions[i].Col = col;
         }
         (currentPos, newPos) = (positions[0], positions[1]);
-        if (!IsInsideBoard(currentPos) || !IsInsideBoard(newPos)) {
+        if (!Board.IsInsideBoard(currentPos) || !Board.IsInsideBoard(newPos)) {
             Console.WriteLine("Invalid input. Try again.");
-            return ParseInput(message);
+            return ParseInputToMove(message);
         }
         return (currentPos, newPos);
-    }
-
-    private static bool IsInsideBoard(Position position) {
-        if (position.Row < 0 || position.Row > 7 || position.Col < 0 || position.Col > 7) return false;
-        return true;
     }
 }
 
