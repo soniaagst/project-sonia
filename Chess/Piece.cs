@@ -2,34 +2,17 @@ public abstract class Piece {
     public PieceColor Color {get; private set;}
     public bool IsKilled {get; set;}
     public Position CurrentPosition {get; set;}
-    public List<Position> ValidMoves {get; private set;}
+    public List<Position> ValidMoves {get; protected set;}
 
-    public Piece(PieceColor color, int row, int col) {
+    public Piece(PieceColor color, Position position) {
         Color = color;
         IsKilled = false;
-        CurrentPosition = new Position(row,col);
+        CurrentPosition = position;
         ValidMoves = new List<Position>();
     }
 
-    public virtual bool IsValidMove(Position newPosition) {
-        if (ValidMoves is not null && ValidMoves.Contains(newPosition)) return true;
-        return false;
-    }
-
-    
-    public List<Position> GetValidMoves(Board board) {
-        List<Position> newPositions = new();
+    public abstract List<Position> GetValidMoves(Board board);
         // check the board state (is a move blocked or kills an opponent)
-        // the piece's movement rules?
-        ValidMoves = newPositions;
-        return newPositions;
-    }
-
-    public abstract bool Move(Position newPosition, out Position? lastMovementOrigin);
+        // the piece's movement rules
     
-    public static bool Kill(Piece targetPiece) {
-        targetPiece.CurrentPosition = new Position(9,9);
-        targetPiece.IsKilled = true;
-        return true;
-    }
 }

@@ -1,10 +1,11 @@
+
 public class Rook : Piece {
     public bool IsMoved {get; set;}
-    public Rook(PieceColor color, int row, int col) : base(color, row, col) {
+    public Rook(PieceColor color, Position position) : base(color, position) {
         IsMoved = false;
     }
 
-    public override bool Move(Position newPosition, out Position? lastMovementOrigin)
+    public override List<Position> GetValidMoves(Board board)
     {
         throw new NotImplementedException();
     }
