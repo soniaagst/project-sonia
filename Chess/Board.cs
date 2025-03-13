@@ -1,13 +1,10 @@
 public class Board {
     private Piece?[,] _grid;
-    private Action<Position, Position> swap;
+    private Position _abyss = new Position(99,99);
 
     public Board() {
         _grid = new Piece?[8,8];
         initializeBoard();
-        swap = (currentPosition, newPosition) => {
-            (_grid[currentPosition.Row, currentPosition.Col], _grid[newPosition.Row, newPosition.Col]) = (_grid[newPosition.Row, newPosition.Col], _grid[currentPosition.Row, currentPosition.Col]);
-        };
     }
 
     private void initializeBoard() {
@@ -46,58 +43,56 @@ public class Board {
         return position.Row >= 0 && position.Row <= 7 && position.Col >=0 && position.Col <= 7;
     }
 
-    // public bool MovePiece(Position currentPosition, Position newPosition, out Position? lastMovementOrigin) {
-    //     Piece? piece = GetPieceAt(currentPosition);
-    //     if (piece is Pawn) {
-    //         int vertDistance = Math.Abs(newPosition.Row - currentPosition.Row);
-    //         int horiDistance = Math.Abs(newPosition.Col - currentPosition.Col);
-    //         if (vertDistance == 1 && horiDistance == 1) {
-    //             Piece? targetPiece = GetPieceAt(newPosition);
-    //             if (targetPiece is not null && targetPiece.Color != piece.Color) {
-    //                 Piece.Kill(targetPiece);
-    //                 lastMovementOrigin = currentPosition;
-    //                 swap(currentPosition, newPosition);
-    //                 return true;
-    //             }
-    //             else {lastMovementOrigin = null; return false;}
-    //         }
-    //         else if(piece.Move(newPosition, out lastMovementOrigin)) {
-    //             swap(currentPosition, newPosition);
-    //             return true;
-    //         }
-    //         else {lastMovementOrigin = null; return false;}
-    //     }
-    //     else if(piece!.Move(newPosition, out lastMovementOrigin)) {
-    //         swap(currentPosition, newPosition);
-    //         return true;
-    //     }
-    //     else {lastMovementOrigin = null; return false;}
-    // }
-
-    public bool MovePiece(Position currentPosition, Position newPosition, out Piece? promotedPawn) {
-        Piece? piece = GetPieceAt(currentPosition);
+    public bool MovePiece(Position currentPosition, Position newPosition, out Piece? killedPiece, out Pawn? promotedPawn) {
+        Piece? movingPiece = GetPieceAt(currentPosition);
+        killedPiece = GetPieceAt(newPosition);
         promotedPawn = null;
-
-        if (piece == null) return false;
-
-        _grid[newPosition.Row, newPosition.Col] = piece;
-        _grid[currentPosition.Row, currentPosition.Col] = null;
-        piece.CurrentPosition = newPosition;
-
-        if (piece is Pawn pawn && (newPosition.Row == 0 || newPosition.Row == 7)) {
-            promotedPawn = pawn;
+        if (movingPiece == null) return false;
+        // if a pawn reached the border, it's a promotion
+        if (movingPiece is Pawn && (newPosition.Row == 0 || newPosition.Row == 7)) {
+            promotedPawn = (Pawn)movingPiece;
         }
-
+        // Castling check: If King moves two steps, it's a castle
+        if (movingPiece is King king && Math.Abs(currentPosition.Col - newPosition.Col) == 2) {
+            HandleCastling(king, newPosition);
+        } else {
+            // Normal move
+            _grid[newPosition.Row, newPosition.Col] = movingPiece;
+            _grid[currentPosition.Row, currentPosition.Col] = null;
+            movingPiece.CurrentPosition = newPosition;
+        }
         return true;
-    }
+    } // later check for en passant too,
 
     public void KillPiece(Piece targetPiece) {
         Position position = targetPiece.CurrentPosition;
-        // Piece.Kill(targetPiece);
         _grid[position.Row, position.Col] = null;
+        targetPiece.CurrentPosition = _abyss;
     }
 
     public void ReplacePiece(Pawn pawn, Piece promotedPiece) {
-        //
+        Position position = pawn.CurrentPosition;
+        pawn.CurrentPosition = _abyss;
+        _grid[position.Row, position.Col] = promotedPiece;
+    }
+
+    private void HandleCastling(King king, Position newKingPos) {
+        int direction = newKingPos.Col > king.CurrentPosition.Col ? 1 : -1; // Short or long castle
+        int rookCol = direction == 1 ? 7 : 0;
+        Position rookOldPos = new Position(king.CurrentPosition.Row, rookCol);
+        Position rookNewPos = new Position(king.CurrentPosition.Row, king.CurrentPosition.Col + direction);
+
+        // Move King
+        _grid[newKingPos.Row, newKingPos.Col] = king;
+        _grid[king.CurrentPosition.Row, king.CurrentPosition.Col] = null;
+        king.CurrentPosition = newKingPos;
+
+        // Move Rook
+        Piece? rook = GetPieceAt(rookOldPos);
+        if (rook is Rook) {
+            _grid[rookNewPos.Row, rookNewPos.Col] = rook;
+            _grid[rookOldPos.Row, rookOldPos.Col] = null;
+            rook.CurrentPosition = rookNewPos;
+        }
     }
 }
