@@ -47,7 +47,7 @@ public class Display {
         return (PromoteOption)choice;
     }
 
-    private static string AskNonNullInput(string? message = null) {
+    private string AskNonNullInput(string? message = null) {
         Console.Write(message);
         string? input = Console.ReadLine();
         while (string.IsNullOrEmpty(input)) {
@@ -58,7 +58,7 @@ public class Display {
         return input;
     }
 
-    public static (Position, Position) ParseInputToMove(string message) {
+    public (Position, Position) ParseInputToMove(string message) {
         string input = AskNonNullInput(message);
         while (input.Split(' ').Count() != 2) {
             Console.WriteLine("Invalid input. Try again.");

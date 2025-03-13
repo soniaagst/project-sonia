@@ -22,6 +22,16 @@ public class GameController {
             _display.DisplayBoard(_board, lastMovementOrigin);
             _display.DisplayMessage($"Enter 'exit' to quit the game. \n{_players[_currentTurn].ToString} turn, enter your move: ");
         }
+
+        if (_gameStatus == GameStatus.Finished) {
+            _display.DisplayBoard(_board, lastMovementOrigin);
+            _display.DisplayMessage($"Game finished.");
+            Player? winner = _players.Find(player => player.Status == PlayerStatus.Won);
+            if (winner is not null) {
+                _display.DisplayMessage($"{winner.ToString} won!");
+            }
+            _display.DisplayMessage("It's a draw.");
+        }
         // while the game is running:
             // check if the current player has valid moves
             // show the board
@@ -42,45 +52,49 @@ public class GameController {
             // show the winner or player states if there's no winner
     }
 
-    private void Move(Position currentPos, Position newPos, Player player) {
-        // check validity for specific piece type
-        // check for special movements for specific piece type (castling, en passant)
-        // if it kills, Kill
-        // move (swap the piece location, clear the old location)
-    }
-
     private bool IsValidMove(Position currentPosition, Position newPosition) {
         Piece? piece = _board.GetPieceAt(currentPosition);
         if (piece is not null) {
             List<Position> validMoves = piece.GetValidMoves(_board);
             if (validMoves.Contains(newPosition)) return true;
         }
+        _display.DisplayMessage("Invalid move!");
         return false;
     }
 
-    public void Move(Position currentPosition, Position newPosition) {
-    if (_board.MovePiece(currentPosition, newPosition, out Piece? promotedPawn)) {
-        if (promotedPawn is Pawn pawn) {
-            HandlePromotion(pawn);
+    public bool Move(Position currentPosition, Position newPosition) {
+        Piece? piece = _board.GetPieceAt(currentPosition);
+        if (!IsValidMove(currentPosition, newPosition)) return false;
+
+        if (_board.MovePiece(currentPosition, newPosition, out Piece? killedPiece, out Pawn? promotedPawn)) {
+            if (killedPiece is not null) {
+                Kill(killedPiece);
+            }
+            if (promotedPawn is not null) {
+                HandlePromotion(promotedPawn);
+            }
         }
         switchPlayer();
+        return true;
     }
-}
 
-private void HandlePromotion(Pawn pawn) {
-    PromoteOption choice = _display.AskPromotionChoice();
-    Piece promotedPiece = CreatePromotedPiece(choice, pawn.Color, pawn.CurrentPosition);
-    _board.ReplacePiece(pawn, promotedPiece);
-}
 
-private Piece CreatePromotedPiece(PromoteOption choice, PieceColor color, Position position) {
-    return choice switch {
-        PromoteOption.Queen => new Queen(color, position),
-        PromoteOption.Rook => new Rook(color, position),
-        PromoteOption.Bishop => new Bishop(color, position),
-        PromoteOption.Knight => new Knight(color, position),
-        _ => throw new InvalidOperationException("Invalid promotion choice")
-    };
-}
+    private void Kill(Piece targetPiece) {
+        _board.KillPiece(targetPiece);
+        targetPiece.IsKilled = true;
+    }
+
+    private void HandlePromotion(Pawn pawn) {
+        PromoteOption choice = _display.AskPromotionChoice();
+        Piece promotedPiece = CreatePromotedPiece(choice, pawn.Color, pawn.CurrentPosition);
+        _board.ReplacePiece(pawn, promotedPiece);
+    }
+
+    private Piece CreatePromotedPiece(PromoteOption choice, PieceColor color, Position position) {
+        if (choice is PromoteOption.Rook) return new Rook(color, position);
+        if (choice is PromoteOption.Bishop) return new Bishop(color, position);
+        if (choice is PromoteOption.Knight) return new Knight(color, position);
+        else return new Queen(color, position);
+    }
 
 }
