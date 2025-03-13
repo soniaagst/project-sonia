@@ -41,7 +41,7 @@ public class Display {
 }
 
 public static class Utility {
-    public static void AskNonNullInput(string? message = null) {
+    private static string AskNonNullInput(string? message = null) {
         Console.Write(message);
         string? input = Console.ReadLine();
         while (string.IsNullOrEmpty(input)) {
@@ -49,14 +49,41 @@ public static class Utility {
             Console.Write(message);
             input = Console.ReadLine();
         }
+        return input;
     }
 
-    // public static (Position currentPos, Position newPos) TryParseInput() {
-    //     // split positions apart on ' '
-    //     // check if they're valid position type
-    //     // check if out of board
-    //     return ;
-    // }
+    public static (Position, Position) ParseInput(string message) {
+        string input = AskNonNullInput(message);
+        while (input.Split(' ').Count() != 2) {
+            Console.WriteLine("Invalid input. Try again.");
+            input = AskNonNullInput(message);
+        }
+        while (input.Split(' ')[0].ToCharArray().Count() !=2 || input.Split(' ')[1].ToCharArray().Count() !=2) {
+            Console.WriteLine("Invalid input. Try again.");
+            input = AskNonNullInput(message);
+        }
+        (Position currentPos, Position newPos) = (new(), new());
+        Position[] positions = [currentPos, newPos];
+        string[] pos = input.Split(' ');
+        for (int i = 0; i < 2; i++) {
+            char[] rowcol = pos[i].ToCharArray();
+            (rowcol[0], rowcol[1]) = (rowcol[1], rowcol[0]); //swapping
+            int row = 56 - rowcol[0];
+            int col = rowcol[1] - 'A';
+            positions[i].Row = row; positions[i].Col = col;
+        }
+        (currentPos, newPos) = (positions[0], positions[1]);
+        if (!IsInsideBoard(currentPos) || !IsInsideBoard(newPos)) {
+            Console.WriteLine("Invalid input. Try again.");
+            return ParseInput(message);
+        }
+        return (currentPos, newPos);
+    }
+
+    private static bool IsInsideBoard(Position position) {
+        if (position.Row < 0 || position.Row > 7 || position.Col < 0 || position.Col > 7) return false;
+        return true;
+    }
 }
 
 public enum PieceColor {
