@@ -1,0 +1,149 @@
+classDiagram
+    class GameController {
+        - GameStatus _gameStatus
+        - Board
+        - List~Player~ _players
+        - int _currentTurn
+        - Display _display
+        - Action switchPlayer
+        + GameController(Display display)
+        + void Play()
+        - void Move(Position currentPos, Position newPos)
+        - void Kill(Piece targetPiece)
+        - void HandlePromotion(Pawn pawn)
+        - Piece CreatePromotedPiece(PromoteOption choice, PieceColor color, Position position)
+    }
+
+    class Display {
+        + void DisplayBoard(Board board)
+        + void DisplayMessage(string message)
+        + string AskNonNullInput(string message)
+        + (Position currentPos, Position newPos) ParseInput()
+        + PromoteOption AskPromotionChoice()
+    }
+
+    class Board {
+        - Piece?[,] _grid
+        + Board()
+        + Piece?[,] GetBoard()
+        + Piece? GetPieceAt(Position position)
+        + static bool IsInsideBoard(Position position)
+        + bool MovePiece(Position currentPos, Position newPos, out Piece? killedPiece, out Pawn? promotedPawn)
+        + void KillPiece(Piece targetPiece)
+        + void ReplacePiece(Pawn pawn, Piece promotedPiece) \promotion/
+        + void HandleCastling(King king)
+        + void HandleEnPassant()
+    }
+
+    class Piece {
+        <<abstract>>
+        + PieceColor Color
+        + bool IsKilled
+        + Position CurrentPosition
+        + Piece(PieceColor color, Position position)
+        + abstract List<Position> GetValidMoves(Board board)
+    }
+
+    class Pawn {
+        + bool IsMoved
+        + override GetValidMoves()
+    }
+
+    class Knight {
+        + override GetValidMoves()
+    }
+
+    class Bishop {
+        + override GetValidMoves()
+    }
+
+    class Rook {
+        + bool IsMoved
+        + override GetValidMoves()
+    }
+
+    class Queen {
+        + override GetValidMoves()
+    }
+
+    class King {
+        + bool IsMoved
+        + bool IsChecked
+        + bool CanCastle
+        + override GetValidMoves()
+    }
+
+    class Player {
+        + string Name
+        + PieceColor Color
+        + PlayerStatus Status
+        + bool HasValidMove
+        + Player(string name, PieceColor color)
+        + override ToString()
+    }
+
+    class Movement {
+        + position currentPosition
+        + position newPosition
+    }
+
+    class Position {
+        <<struct>>
+        + int Row
+        + int Col
+        + Position(int row, int col)
+    }
+
+    class GameStatus {
+        <<enum>>
+        Playing
+        Finished
+    }
+
+    class PlayerStatus {
+        <<enum>>
+        Normal, Checked,
+        Checkmate, Won,
+        Stalemate, Draw,
+        Resigned
+    }
+
+    class PromoteOption {
+        <<enum>>
+        Queen, Rook,
+        Bishop, Knight
+    }
+
+    class PieceColor {
+        <<enum>>
+        White, Black
+    }
+
+    class IPlayer {
+        <<interface>>
+        + PieceColor Color
+        + PlayerStatus Status
+        + bool HasValidMove
+    }
+
+    GameController --> Board
+    GameController --> IPlayer
+
+    Board --> Piece
+    
+    Piece <|-- Pawn
+    Piece <|-- Knight
+    Piece <|-- Bishop
+    Piece <|-- Rook
+    Piece <|-- Queen
+    Piece <|-- King
+    
+    Player --|> IPlayer
+    
+    Movement -- GameController
+    Display -- GameController
+    PromoteOption -- GameController
+    GameStatus -- GameController
+    PlayerStatus -- Player
+    Position --Piece
+    PieceColor -- Piece
