@@ -7,37 +7,37 @@ public class Pawn : Piece {
         CanPromote = false;
     }
 
-    public override List<Position> GetValidMoves(Board board)
-    {
-        throw new NotImplementedException();
-    }
+    public override List<Position> GetValidMoves(Board board) {
+        List<Position> moves = new();
+        int direction = (Color == PieceColor.White) ? -1 : 1;
 
-    // public override bool Move(Position newPosition, out Position? lastMovementOrigin) {
-    //     int verticalDistance = Math.Abs(newPosition.Row - CurrentPosition.Row);
-    //     int horizontalDistance = Math.Abs(newPosition.Col - CurrentPosition.Col);
-    //     if (verticalDistance > 1) { // En Passant checking
-    //         if (verticalDistance > 2 || IsMoved) {
-    //             lastMovementOrigin = null;
-    //             return false;
-    //         }
-    //         else {
-    //             lastMovementOrigin = CurrentPosition;
-    //             CurrentPosition = newPosition;
-    //             IsMoved = true;
-    //             return true;
-    //         }
-    //     }
-    //     if (horizontalDistance > 0) {
-    //         lastMovementOrigin = null;
-    //         return false;
-    //     }
-    //     if (newPosition.Row == 0 || newPosition.Row == 7) CanPromote = true;
-    //     lastMovementOrigin = CurrentPosition;
-    //     CurrentPosition = newPosition;
-    //     return true;
-    // }
+        // Normal forward move
+        Position forwardOne = new Position(CurrentPosition.Row + direction, CurrentPosition.Col);
+        if (Board.IsInsideBoard(forwardOne) && board.GetPieceAt(forwardOne) == null) {
+            moves.Add(forwardOne);
 
-    public void Promote(PromoteOption option) {
-        
+            // First move can go two squares
+            Position forwardTwo = new Position(CurrentPosition.Row + (2 * direction), CurrentPosition.Col);
+            if (!IsMoved && Board.IsInsideBoard(forwardTwo) && board.GetPieceAt(forwardTwo) == null) {
+                moves.Add(forwardTwo);
+            }
+        }
+
+        // Sleding
+        Position[] diagonals = {
+            new Position(CurrentPosition.Row + direction, CurrentPosition.Col - 1),
+            new Position(CurrentPosition.Row + direction, CurrentPosition.Col + 1)
+        };
+
+        foreach (var diag in diagonals) {
+            if (Board.IsInsideBoard(diag)) {
+                Piece? target = board.GetPieceAt(diag);
+                if (target != null && target.Color != Color) {
+                    moves.Add(diag);
+                }
+            }
+        }
+
+        return moves;
     }
 }

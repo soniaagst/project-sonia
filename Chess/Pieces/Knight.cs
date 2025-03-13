@@ -11,7 +11,7 @@ public class Knight : Piece {
             if (Board.IsInsideBoard(newPos)) {
                 Piece? pieceAtNewPos = board.GetPieceAt(newPos);
                 if (pieceAtNewPos == null || pieceAtNewPos.Color != this.Color) {
-                    moves.Add(newPos); // Empty square or capture
+                    moves.Add(newPos); // Kill or no blocks
                 }
             }
         }

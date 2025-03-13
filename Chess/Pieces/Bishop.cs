@@ -2,7 +2,7 @@ public class Bishop : Piece {
     public Bishop(PieceColor color, Position position) : base(color, position) {}
 
     public override List<Position> GetValidMoves(Board board) {
-        List<Position> moves = new List<Position>();
+        List<Position> validMoves = new List<Position>();
 
         int[] directions = { -1, 1 }; // Diagonal directions
         foreach (int rowDir in directions) {
@@ -14,14 +14,14 @@ public class Bishop : Piece {
                     
                     Piece? pieceAtDest = board.GetPieceAt(pos);
                     if (pieceAtDest == null) {
-                        moves.Add(pos);
+                        validMoves.Add(pos);
                     } else {
-                        if (pieceAtDest.Color != this.Color) moves.Add(pos); // Capture
+                        if (pieceAtDest.Color != this.Color) validMoves.Add(pos); // Kill
                         break; // Stop if piece blocks path
                     }
                 }
             }
         }
-        return moves;
+        return validMoves;
     }
 }
