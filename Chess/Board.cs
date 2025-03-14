@@ -48,11 +48,21 @@ public class Board {
         killedPiece = GetPieceAt(newPosition);
         promotedPawn = null;
         if (movingPiece == null) return false;
+        if (movingPiece is Pawn pawn) pawn.CanEnPassant = false;
         // if a pawn reached the border, it's a promotion
         if (movingPiece is Pawn && (newPosition.Row == 0 || newPosition.Row == 7)) {
             promotedPawn = (Pawn)movingPiece;
         }
-        // Castling check: If King moves two steps, it's a castle
+        // // If a pawn moves two steps forward, the enemy's pawn at immidiate side can en passant
+        // if (movingPiece is Pawn && Math.Abs(newPosition.Row - currentPosition.Row) == 2) {
+        //     List<Position> adjacentPositions = [new (newPosition.Row, newPosition.Col-1), new (newPosition.Row, newPosition.Col + 1)];
+        //     foreach (var adjacentPosition in adjacentPositions) {
+        //         if (GetPieceAt(adjacentPosition) is Pawn enemyPawn && enemyPawn.Color != movingPiece.Color && IsInsideBoard(adjacentPosition)) {
+        //             enemyPawn.CanEnPassant = true;
+        //         }
+        //     }
+        // }
+        // If King moves two steps, it's a castle
         if (movingPiece is King king && Math.Abs(currentPosition.Col - newPosition.Col) == 2) {
             HandleCastling(king, newPosition);
         } else {
@@ -60,9 +70,10 @@ public class Board {
             _grid[newPosition.Row, newPosition.Col] = movingPiece;
             _grid[currentPosition.Row, currentPosition.Col] = null;
             movingPiece.CurrentPosition = newPosition;
+            movingPiece.IsMoved = true;
         }
         return true;
-    } // later check for en passant too,
+    }
 
     public void KillPiece(Piece targetPiece) {
         Position position = targetPiece.CurrentPosition;
@@ -94,5 +105,22 @@ public class Board {
             _grid[rookOldPos.Row, rookOldPos.Col] = null;
             rook.CurrentPosition = rookNewPos;
         }
+    }
+
+    public bool IsUnderAttack(Position pos, PieceColor color) {
+        foreach (var enemyPiece in _grid) {
+            if (enemyPiece is not null && enemyPiece.Color != color) { // Only check enemy pieces
+                List<Position> enemyMoves = enemyPiece.GetValidMoves(this);
+                if (enemyMoves.Contains(pos)) {
+                    return true;  // Found an enemy piece attacking this position
+                }
+            }
+        }
+        return false;  // No threats detected
+    }
+
+    public bool IsFriendlyPieceAt(Position pos, PieceColor color) {
+        Piece? piece = GetPieceAt(pos);
+        return piece != null && piece.Color == color;
     }
 }
