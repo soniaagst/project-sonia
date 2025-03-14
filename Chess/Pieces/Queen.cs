@@ -3,7 +3,7 @@ public class Queen : Piece {
     public Queen(PieceColor color, Position position) : base(color, position) {}
 
     public override List<Position> GetValidMoves(Board board) {
-        List<Position> moves = new();
+        List<Position> validMoves = new();
         Position[] directions = {
             new Position(-1, 0),  // Up
             new Position(1, 0),   // Down
@@ -23,14 +23,14 @@ public class Queen : Piece {
 
                 Piece? piece = board.GetPieceAt(current);
                 if (piece == null) {
-                    moves.Add(current);
+                    validMoves.Add(current);
                 } else {
-                    if (piece.Color != Color) moves.Add(current);
+                    if (piece.Color != Color) validMoves.Add(current);
                     break;
                 }
             }
         }
 
-        return moves;
+        return validMoves;
     }
 }

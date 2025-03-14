@@ -1,12 +1,9 @@
 
 public class Rook : Piece {
-    public bool IsMoved {get; set;}
-    public Rook(PieceColor color, Position position) : base(color, position) {
-        IsMoved = false;
-    }
+    public Rook(PieceColor color, Position position) : base(color, position) {}
 
     public override List<Position> GetValidMoves(Board board) {
-        List<Position> moves = new();
+        List<Position> validMoves = new();
         Position[] directions = {
             new Position(-1, 0), // Up
             new Position(1, 0),  // Down
@@ -22,14 +19,14 @@ public class Rook : Piece {
 
                 Piece? piece = board.GetPieceAt(current);
                 if (piece == null) {
-                    moves.Add(current);
+                    validMoves.Add(current);
                 } else {
-                    if (piece.Color != Color) moves.Add(current); // Kill
+                    if (piece.Color != Color) validMoves.Add(current); // Kill
                     break; // Stop when blocked
                 }
             }
         }
 
-        return moves;
+        return validMoves;
     }
 }

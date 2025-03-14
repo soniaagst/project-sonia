@@ -2,7 +2,7 @@ public class Knight : Piece {
     public Knight(PieceColor color, Position position) : base(color, position) { }
 
     public override List<Position> GetValidMoves(Board board) {
-        List<Position> moves = new List<Position>();
+        List<Position> validMoves = new List<Position>();
         List<List<int>> offsets = [[2,1], [2,-1], [-2,1], [-2,-1], [1,2], [1,-2], [-1,2], [-1,-2]];
 
         foreach (var offset in offsets) {
@@ -11,10 +11,10 @@ public class Knight : Piece {
             if (Board.IsInsideBoard(newPos)) {
                 Piece? pieceAtNewPos = board.GetPieceAt(newPos);
                 if (pieceAtNewPos == null || pieceAtNewPos.Color != this.Color) {
-                    moves.Add(newPos); // Kill or no blocks
+                    validMoves.Add(newPos); // Kill or no blocks
                 }
             }
         }
-        return moves;
+        return validMoves;
     }
 }

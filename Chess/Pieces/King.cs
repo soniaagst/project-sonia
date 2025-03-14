@@ -1,36 +1,38 @@
 
 public class King : Piece {
-    public bool IsMoved {get; set;}
     public bool IsChecked {get; set;}
-    private List<Position> _kingDirections = [];
     public King(PieceColor color, Position position) : base(color, position) {
-        IsMoved = false;
         IsChecked = false;
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                if (i != 0 || j != 0) _kingDirections.Add(new Position(i,j));
-            }
-        }
     }
 
     public override List<Position> GetValidMoves(Board board) {
-        List<Position> moves = new();
+        List<Position> validMoves = new();
 
-        // Normal king moves (1 step in all directions)
-        foreach (var direction in _kingDirections) {
-            Position newPos = new Position(CurrentPosition.Row + direction.Row, CurrentPosition.Col + direction.Col);
-            if (Board.IsInsideBoard(newPos)) {
-                moves.Add(newPos);
+        List<Position> directions = new();
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (i != 0 || j != 0) directions.Add(new Position(i,j));
+            }
+        }
+
+        foreach (var dir in directions) {
+            Position newPos = new Position(CurrentPosition.Row + dir.Row, CurrentPosition.Col + dir.Col);
+
+            if (Board.IsInsideBoard(newPos) && 
+                !board.IsFriendlyPieceAt(newPos, Color) && 
+                !board.IsUnderAttack(newPos, Color)) 
+            {
+                validMoves.Add(newPos);
             }
         }
 
         // Check for castling
         if (!IsMoved && !IsChecked) {
-            TryAddCastlingMove(board, ref moves, true);  // Short Castle
-            TryAddCastlingMove(board, ref moves, false); // Long Castle
+            TryAddCastlingMove(board, ref validMoves, true);  // Short Castle
+            TryAddCastlingMove(board, ref validMoves, false); // Long Castle
         }
 
-        return moves;
+        return validMoves;
     }
 
     private void TryAddCastlingMove(Board board, ref List<Position> moves, bool isShortCastle) {
@@ -59,5 +61,4 @@ public class King : Piece {
         }
         return false;
     }
-
 }
