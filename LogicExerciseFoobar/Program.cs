@@ -9,3 +9,6 @@ foreach (object item in foobarjazz) {
         Console.Write(", ");
     }
 }
+
+Console.WriteLine("\n\nStart of foobazbarjazzhuzz");
+FooBar.Bazhuzz(1260);

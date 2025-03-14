@@ -117,4 +117,30 @@ public class FooBar {
             else yield return num;
         }
     }
+
+    public static void Bazhuzz(int maxnumber) {
+        Dictionary<int, string> words = new() {
+            {3, "foo"},
+            {4, "baz"},
+            {5, "bar"},
+            {7, "jazz"},
+            {9, "huzz"}
+        };
+
+        for (int num = 1; num <= maxnumber; num++) {
+            bool divisible = false;
+            foreach (int key in words.Keys) {
+                if (num % key == 0) {
+                    Console.Write(words[key]);
+                    divisible = true;
+                }
+            }
+            if (divisible == false) {
+                Console.Write(num);
+            }
+            if (num < maxnumber) {
+                Console.Write(", ");
+            }
+        }
+    }
 }
