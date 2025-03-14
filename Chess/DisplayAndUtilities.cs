@@ -47,7 +47,7 @@ public class Display {
         return (PromoteOption)choice;
     }
 
-    private string AskNonNullInput(string? message = null) {
+    public string AskNonNullInput(string? message = null) {
         Console.Write(message);
         string? input = Console.ReadLine();
         while (string.IsNullOrEmpty(input)) {
@@ -58,32 +58,35 @@ public class Display {
         return input;
     }
 
-    public (Position, Position) ParseInputToMove(string message) {
-        string input = AskNonNullInput(message);
-        while (input.Split(' ').Count() != 2) {
-            Console.WriteLine("Invalid input. Try again.");
-            input = AskNonNullInput(message);
+    public (Position, Position) AskValidMove(string message) {
+        string input = AskNonNullInput(message).ToUpper();
+        if (input == "EXIT") return (new Position(-1,-1), new Position(-1,-1));
+        else {
+            while (input.Split(' ').Count() != 2) {
+                Console.WriteLine("Invalid input. Try again.");
+                input = AskNonNullInput(message).ToUpper();
+            }
+            while (input.Split(' ')[0].ToCharArray().Count() !=2 || input.Split(' ')[1].ToCharArray().Count() !=2) {
+                Console.WriteLine("Invalid input. Try again.");
+                input = AskNonNullInput(message).ToUpper();
+            }
+            (Position currentPos, Position newPos) = (new(), new());
+            Position[] positions = [currentPos, newPos];
+            string[] pos = input.Split(' ');
+            for (int i = 0; i < 2; i++) {
+                char[] rowcol = pos[i].ToCharArray();
+                (rowcol[0], rowcol[1]) = (rowcol[1], rowcol[0]);
+                int row = 56 - rowcol[0];
+                int col = rowcol[1] - 'A';
+                positions[i].Row = row; positions[i].Col = col;
+            }
+            (currentPos, newPos) = (positions[0], positions[1]);
+            if (!Board.IsInsideBoard(currentPos) || !Board.IsInsideBoard(newPos)) {
+                Console.WriteLine("Invalid input. Try again.");
+                return AskValidMove(message);
+            }
+            return (currentPos, newPos);
         }
-        while (input.Split(' ')[0].ToCharArray().Count() !=2 || input.Split(' ')[1].ToCharArray().Count() !=2) {
-            Console.WriteLine("Invalid input. Try again.");
-            input = AskNonNullInput(message);
-        }
-        (Position currentPos, Position newPos) = (new(), new());
-        Position[] positions = [currentPos, newPos];
-        string[] pos = input.Split(' ');
-        for (int i = 0; i < 2; i++) {
-            char[] rowcol = pos[i].ToCharArray();
-            (rowcol[0], rowcol[1]) = (rowcol[1], rowcol[0]); //swapping
-            int row = 56 - rowcol[0];
-            int col = rowcol[1] - 'A';
-            positions[i].Row = row; positions[i].Col = col;
-        }
-        (currentPos, newPos) = (positions[0], positions[1]);
-        if (!Board.IsInsideBoard(currentPos) || !Board.IsInsideBoard(newPos)) {
-            Console.WriteLine("Invalid input. Try again.");
-            return ParseInputToMove(message);
-        }
-        return (currentPos, newPos);
     }
 }
 
