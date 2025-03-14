@@ -10,9 +10,4 @@ public class Player {
         Status = PlayerStatus.Normal;
         HasValidMoves = true;
     }
-
-    public override string ToString()
-    {
-        return Color.ToString();
-    }
 }
