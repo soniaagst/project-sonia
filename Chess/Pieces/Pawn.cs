@@ -1,8 +1,6 @@
 public class Pawn : Piece {
-    public bool CanPromote {get; set;}
     public bool CanEnPassant {get; set;}
     public Pawn(PieceColor color, Position position) : base(color, position) {
-        CanPromote = false;
         CanEnPassant = false;
     }
 
