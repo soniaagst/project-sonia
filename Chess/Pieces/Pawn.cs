@@ -8,12 +8,10 @@ public class Pawn : Piece {
         List<Position> validmoves = new();
         int direction = (Color == PieceColor.White) ? -1 : 1; // If pawn color is white, move up. If black, move down.
 
-        // Normal forward move
         Position forwardOne = new Position(CurrentPosition.Row + direction, CurrentPosition.Col);
         if (Board.IsInsideBoard(forwardOne) && board.GetPieceAt(forwardOne) == null) {
             validmoves.Add(forwardOne);
 
-            // First move can go two squares
             Position forwardTwo = new Position(CurrentPosition.Row + (2 * direction), CurrentPosition.Col);
             if (!IsMoved && Board.IsInsideBoard(forwardTwo) && board.GetPieceAt(forwardTwo) == null) {
                 validmoves.Add(forwardTwo);

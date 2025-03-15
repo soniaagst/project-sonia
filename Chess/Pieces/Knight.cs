@@ -10,8 +10,8 @@ public class Knight : Piece {
 
             if (Board.IsInsideBoard(newPos)) {
                 Piece? pieceAtNewPos = board.GetPieceAt(newPos);
-                if (pieceAtNewPos == null || pieceAtNewPos.Color != this.Color) {
-                    validMoves.Add(newPos); // Kill or no blocks
+                if (pieceAtNewPos == null || pieceAtNewPos.Color != Color) {
+                    validMoves.Add(newPos);
                 }
             }
         }

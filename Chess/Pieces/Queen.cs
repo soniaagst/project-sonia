@@ -4,28 +4,26 @@ public class Queen : Piece {
 
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validMoves = new();
-        Position[] directions = {
-            new Position(-1, 0),  // Up
-            new Position(1, 0),   // Down
-            new Position(0, -1),  // Left
-            new Position(0, 1),   // Right
-            new Position(-1, -1), // Diagonal Up-Left
-            new Position(-1, 1),  // Diagonal Up-Right
-            new Position(1, -1),  // Diagonal Down-Left
-            new Position(1, 1)    // Diagonal Down-Right
-        };
+
+        List<List<int>> directions = [];
+        for (int row = -1; row <= 1; row++) {
+            for (int col = -1; col <= 1; col++) {
+                if (row != 0 || col != 0) directions.Add([row,col]);
+            }
+        }
 
         foreach (var dir in directions) {
-            Position current = CurrentPosition;
-            while (true) {
-                current = new Position(current.Row + dir.Row, current.Col + dir.Col);
-                if (!Board.IsInsideBoard(current)) break;
+            Position destination = CurrentPosition;
 
-                Piece? piece = board.GetPieceAt(current);
-                if (piece == null) {
-                    validMoves.Add(current);
+            while (true) {
+                destination = new Position(destination.Row + dir[0], destination.Col + dir[1]);
+                if (!Board.IsInsideBoard(destination)) break;
+
+                Piece? pieceAtDestination = board.GetPieceAt(destination);
+                if (pieceAtDestination == null) {
+                    validMoves.Add(destination);
                 } else {
-                    if (piece.Color != Color) validMoves.Add(current);
+                    if (pieceAtDestination.Color != Color) validMoves.Add(destination);
                     break;
                 }
             }

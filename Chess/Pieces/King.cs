@@ -8,21 +8,21 @@ public class King : Piece {
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validMoves = new();
 
-        List<Position> directions = new();
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                if (i != 0 || j != 0) directions.Add(new Position(i,j));
+        List<List<int>> directions = new();
+        for (int row = -1; row <= 1; row++) {
+            for (int col = -1; col <= 1; col++) {
+                if (row != 0 || col != 0) directions.Add([row,col]);
             }
         }
 
         foreach (var dir in directions) {
-            Position newPos = new Position(CurrentPosition.Row + dir.Row, CurrentPosition.Col + dir.Col);
+            Position oneStep = new Position(CurrentPosition.Row + dir[0], CurrentPosition.Col + dir[1]);
 
-            if (Board.IsInsideBoard(newPos) && 
-                !board.IsFriendlyPieceAt(newPos, Color) && 
-                !board.IsUnderAttack(newPos, Color)) 
+            if (Board.IsInsideBoard(oneStep) && 
+                !board.IsFriendlyPieceAt(oneStep, Color) && 
+                !board.IsUnderAttack(oneStep, Color))
             {
-                validMoves.Add(newPos);
+                validMoves.Add(oneStep);
             }
         }
 
@@ -35,25 +35,27 @@ public class King : Piece {
         return validMoves;
     }
 
-    private void TryAddCastlingMove(Board board, ref List<Position> moves, bool isShortCastle) {
-        int col = isShortCastle ? 6 : 2;  // Target column for the king
-        int rookCol = isShortCastle ? 7 : 0;  // Column where the rook starts
-        Position rookPos = new Position(CurrentPosition.Row, rookCol);
-        Position kingTarget = new Position(CurrentPosition.Row, col);
+    private void TryAddCastlingMove(Board board, ref List<Position> castleMoves, bool isShortCastle) {
+        int kingColDest = isShortCastle ? 6 : 2;  // Destination column for the king
+        int rookColStart = isShortCastle ? 7 : 0;  // Column where the rook starts
+        Position rookPos = new Position(CurrentPosition.Row, rookColStart);
+        Position kingDestination = new Position(CurrentPosition.Row, kingColDest);
 
-        if (CanCastle(board, rookPos, kingTarget)) {
-            moves.Add(kingTarget);
+        if (CanCastle(board, rookPos)) {
+            castleMoves.Add(kingDestination);
         }
     }
 
-    private bool CanCastle(Board board, Position rookPos, Position kingTarget) {
+    private bool CanCastle(Board board, Position rookPos) {
         Piece? piece = board.GetPieceAt(rookPos);
-        if (piece is Rook rook && !rook.IsMoved) {
-            // Check if the path between King and Rook is clear and not under attack
+
+        if (piece is Rook rook && rook.IsMoved is false) {
             int step = rookPos.Col > CurrentPosition.Col ? 1 : -1;
-            for (int c = CurrentPosition.Col + step; c != rookPos.Col; c += step) {
-                Position checkPos = new Position(CurrentPosition.Row, c);
-                if (board.GetPieceAt(checkPos) != null) {
+
+            for (int col = CurrentPosition.Col + step; col != rookPos.Col; col += step) {
+                Position betweenPos = new Position(CurrentPosition.Row, col);
+
+                if (board.GetPieceAt(betweenPos) is not null || board.IsUnderAttack(betweenPos, Color)) {
                     return false;
                 }
             }

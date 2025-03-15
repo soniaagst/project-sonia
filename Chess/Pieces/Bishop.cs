@@ -3,21 +3,22 @@ public class Bishop : Piece {
 
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validMoves = new List<Position>();
+        int[] directions = [ -1, 1 ];
 
-        int[] directions = { -1, 1 }; // Diagonal directions
         foreach (int rowDir in directions) {
             foreach (int colDir in directions) {
-                Position pos = CurrentPosition;
+                Position destination = CurrentPosition;
+
                 while (true) {
-                    pos = new Position(pos.Row + rowDir, pos.Col + colDir);
-                    if (!Board.IsInsideBoard(pos)) break;
+                    destination = new Position(destination.Row + rowDir, destination.Col + colDir);
+                    if (!Board.IsInsideBoard(destination)) break;
                     
-                    Piece? pieceAtDest = board.GetPieceAt(pos);
-                    if (pieceAtDest == null) {
-                        validMoves.Add(pos);
+                    Piece? pieceAtDestination = board.GetPieceAt(destination);
+                    if (pieceAtDestination == null) {
+                        validMoves.Add(destination);
                     } else {
-                        if (pieceAtDest.Color != this.Color) validMoves.Add(pos); // Kill
-                        break; // Stop if piece blocks path
+                        if (pieceAtDestination.Color != Color) validMoves.Add(destination);
+                        break;
                     }
                 }
             }
