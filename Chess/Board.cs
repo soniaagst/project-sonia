@@ -110,17 +110,28 @@ public class Board {
     public bool IsUnderAttack(Position pos, PieceColor color) {
         foreach (var enemyPiece in _grid) {
             if (enemyPiece is not null && enemyPiece.Color != color) { // Only check enemy pieces
+                if (enemyPiece is King) continue;
                 List<Position> enemyMoves = enemyPiece.GetValidMoves(this);
                 if (enemyMoves.Contains(pos)) {
-                    return true;  // Found an enemy piece attacking this position
+                    return true;
                 }
             }
         }
-        return false;  // No threats detected
+        return false;
     }
 
     public bool IsFriendlyPieceAt(Position pos, PieceColor color) {
         Piece? piece = GetPieceAt(pos);
         return piece != null && piece.Color == color;
+    }
+
+    public King? FindKing(PieceColor color) {
+        King? king = null;
+        foreach (Piece? piece in _grid) {
+            if (piece is not null && piece.Color == color && piece is King) {
+                king = (King)piece;
+            }
+        }
+        return king;
     }
 }
