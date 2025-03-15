@@ -2,7 +2,8 @@ public class GameController {
     private GameStatus _gameStatus;
     private Board _board;
     private List<Player> _players = new();
-    private int _currentTurn;
+    private int _currentTurnIndex;
+    private Player _currentPlayer;
     private Display _display;
     private Action switchPlayer;
 
@@ -11,99 +12,78 @@ public class GameController {
         _board = new();
         _players.Add(new Player(whiteName, PieceColor.White));
         _players.Add(new Player(blackName, PieceColor.Black));
-        _currentTurn = 0;
+        _currentTurnIndex = 0;
+        _currentPlayer = _players[_currentTurnIndex];
         _display = display;
-        switchPlayer = () => { _currentTurn = Math.Abs(_currentTurn - 1); };
+        switchPlayer = () => { _currentTurnIndex = 1 - _currentTurnIndex; _currentPlayer = _players[_currentTurnIndex];};
     }
 
     public void Play() {
         Position? lastMovementOrigin = null;
         while (_gameStatus == GameStatus.Running) {
-            List<Position> currentValidMoves = [];
-            foreach (var piece in _board.GetBoard()) {
-                if (piece?.Color == _players[_currentTurn].Color) {
-                    currentValidMoves.AddRange(piece.GetValidMoves(_board));
-                }
-            }
-            if (currentValidMoves != null) _players[_currentTurn].HasValidMoves = true; else _players[_currentTurn].HasValidMoves = false;
-
             _display.DisplayBoard(_board, lastMovementOrigin);
             _display.DisplayMessage("Enter 'exit' to quit the game.");
-            (Position currentPos, Position newPos) = _display.AskValidMove($"{_players[_currentTurn].Name}'s turn, enter your move (ex.: b1 c3) ");
-            if (currentPos.Row < 0) {
+            if (_currentPlayer.Status == PlayerStatus.Checked) _display.DisplayMessage("CHECK!");
+            string input = _display.AskNonNullInput($"{_currentPlayer.Name}'s ({_currentPlayer.Color}) turn, enter your move (ex.: b1 c3) ");
+
+            if (input == "EXIT") {
                 _display.DisplayMessage("Game exited.");
-                _players[_currentTurn].Status = PlayerStatus.Resigned; switchPlayer(); _players[_currentTurn].Status = PlayerStatus.Won;
-                _gameStatus= GameStatus.Finished; break;
-            }
-            
-            while (Move(currentPos, newPos) == false) {
-                _display.DisplayMessage("Enter 'exit' to quit the game.");
-                (currentPos, newPos) = _display.AskValidMove($"{_players[_currentTurn].Name}'s turn, enter your move (ex.: b1 c3) ");
-                if (currentPos.Row < 0) {
-                    _display.DisplayMessage("Game exited.");
-                    _players[_currentTurn].Status = PlayerStatus.Resigned; switchPlayer(); _players[_currentTurn].Status = PlayerStatus.Won;
-                    _gameStatus= GameStatus.Finished; break;
-                }
+                _currentPlayer.Status = PlayerStatus.Resigned; switchPlayer(); _currentPlayer.Status = PlayerStatus.Won;
+                _gameStatus= GameStatus.Finished;
+                break;
             }
 
-
+            Movement? movement;
+            if (!_display.TryParseMove(input, out movement)) {
+                _display.DisplayMessage("Invalid input or move. Try again.");
+                continue;
+            }
+            if (Move(movement!) == true) {
+                UpdateGameStatus();
+                switchPlayer();
+            }
+            else {
+                _display.DisplayMessage("Invalid move. Try again.");
+                continue;
+            }
         }
 
         if (_gameStatus == GameStatus.Finished) {
             _display.DisplayBoard(_board, lastMovementOrigin);
-            _display.DisplayMessage($"Game Over.");
+            _display.DisplayMessage("Game Over.");
             Player? winner = _players.Find(player => player.Status == PlayerStatus.Won);
             Player? resignedPlayer = _players.Find(player => player.Status == PlayerStatus.Resigned);
-            if (winner is not null) {
-                _display.DisplayMessage($"{winner.Name} won!");
-            }
             if (resignedPlayer is not null) {
                 _display.DisplayMessage($"{resignedPlayer.Name} has resigned.");
             }
+            if (winner is not null) {
+                _display.DisplayMessage($"{winner.Name} won!");
+            }
             else _display.DisplayMessage("It's a draw.");
         }
-        // while the game is running:
-            // check if the current player has valid moves
-            // show the board
-            // show message "Enter 'exit' to quit the game. White turn, enter your move (ex.: B1 C3) "
-            // check if the input is 'exit'
-            // try parse the input into a Movement
-            // find the piece to move on the board (old position)
-            // check if the piece belongs to currentplayer
-            // check if there's opponent piece on board (new position)
-            // call Move
-            // check if a pawn can be promoted --> show promote options --> promote
-            // check if the move has checked the opponent --> change opponent status
-            // check if the move has release the player from checked status
-            // change game status if: checkmate, stalemate, draw
-            // switch turn
-        // if the game finished:
-            // show final board
-            // show the winner or player states if there's no winner
+        
     }
 
-    private bool IsValidMove(Position currentPosition, Position newPosition) {
-        Piece? piece = _board.GetPieceAt(currentPosition);
-        if (piece is not null && piece.Color == _players[_currentTurn].Color) {
+    private bool IsValidMove(Movement move) { // add: if someone is checked, the only valid move is save the king
+        Piece? piece = _board.GetPieceAt(move.From);
+        if (piece is not null && piece.Color == _currentPlayer.Color) {
             List<Position> validMoves = piece.GetValidMoves(_board);
-            if (validMoves.Contains(newPosition)) return true;
+            if (validMoves.Contains(move.To)) return true;
         }
         _display.DisplayMessage("Invalid move!");
         return false;
     }
 
-    public bool Move(Position currentPosition, Position newPosition) {
-        Piece? piece = _board.GetPieceAt(currentPosition);
-        if (!IsValidMove(currentPosition, newPosition)) return false;
+    public bool Move(Movement movement) {
+        if (!IsValidMove(movement)) return false;
 
-        else if (_board.MovePiece(currentPosition, newPosition, out Piece? killedPiece, out Pawn? promotedPawn)) {
+        else if (_board.MovePiece(movement.From, movement.To, out Piece? killedPiece, out Pawn? promotedPawn)) {
             if (killedPiece is not null) {
                 Kill(killedPiece);
             }
             if (promotedPawn is not null) {
                 HandlePromotion(promotedPawn);
             }
-            switchPlayer();
             return true;
         }
         
@@ -126,6 +106,34 @@ public class GameController {
         if (choice is PromoteOption.Bishop) return new Bishop(color, position);
         if (choice is PromoteOption.Knight) return new Knight(color, position);
         else return new Queen(color, position);
+    }
+
+    private void UpdateGameStatus() {
+        Player opponent = _players[1 - _currentTurnIndex];
+        // if in check and don't have valid move, it's checkmate
+        if (IsInCheck(opponent)) {
+            opponent.Status = PlayerStatus.Checked;
+            if (opponent.HasValidMove(_board) == false) {
+                opponent.Status = PlayerStatus.Checkmate;
+                _currentPlayer.Status = PlayerStatus.Won;
+                _gameStatus = GameStatus.Finished;
+                return;
+            }
+        }
+        // if not in check but don't have valid move, it's stalemate
+        if (opponent.HasValidMove(_board) == false) {
+            opponent.Status = PlayerStatus.Stalemate;
+            _currentPlayer.Status = PlayerStatus.Stalemate;
+            _gameStatus = GameStatus.Finished;
+            return;
+        }
+    }
+
+    public bool IsInCheck(Player player) {
+        King king = _board.FindKing(player.Color)!;
+        bool result = _board.IsUnderAttack(king.CurrentPosition, king.Color);
+        if (result) king.IsChecked = true;
+        return result;
     }
 
 }
