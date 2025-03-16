@@ -1,6 +1,6 @@
 public class Board {
     private Piece?[,] _grid;
-    private Position _abyss = new Position(99,99);
+    private Position _nowhere = new Position(99,99);
 
     public Board() {
         _grid = new Piece?[8,8];
@@ -79,14 +79,12 @@ public class Board {
     }
 
     public void KillPiece(Piece targetPiece) {
-        Position position = targetPiece.CurrentPosition;
-        _grid[position.Row, position.Col] = null;
-        targetPiece.CurrentPosition = _abyss;
+        targetPiece.CurrentPosition = _nowhere;
     }
 
     public void ReplacePiece(Pawn pawn, Piece promotedPiece) {
         Position position = pawn.CurrentPosition;
-        pawn.CurrentPosition = _abyss;
+        pawn.CurrentPosition = _nowhere;
         _grid[position.Row, position.Col] = promotedPiece;
     }
 
