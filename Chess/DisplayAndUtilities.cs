@@ -1,10 +1,10 @@
 public class Display : IDisplay {
-    public void DisplayBoard(Board board, Position? lastMovementOrigin = null) {
+    public void DisplayBoard(Board board, Position? lastMoveOrigin) {
         Console.WriteLine("  A  B  C  D  E  F  G  H  ");
         for (int row = 0; row < 8; row++) {
             Console.Write(8-row);
             for (int col = 0; col < 8; col++) {
-                if (lastMovementOrigin?.Row == row && lastMovementOrigin?.Col == col) {
+                if (lastMoveOrigin?.Row == row && lastMoveOrigin?.Col == col) {
                     Console.Write(" ＊");
                 }
                 else if (board.GetBoard()[row, col] == null) {

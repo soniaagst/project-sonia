@@ -19,9 +19,9 @@ public class GameController {
     }
 
     public void Play() {
-        Position? lastMovementOrigin = null;
+        Position? lastMoveOrigin = null;
         while (_gameStatus == GameStatus.Running) {
-            _display.DisplayBoard(_board, lastMovementOrigin);
+            _display.DisplayBoard(_board, lastMoveOrigin);
             _display.DisplayMessage("Enter 'exit' to quit the game.");
             if (_currentPlayer.Status == PlayerStatus.Checked) _display.DisplayMessage("CHECK!");
             string input = _display.AskNonNullInput($"{_currentPlayer.Name}'s ({_currentPlayer.Color}) turn, enter your move (ex.: b1 c3) ");
@@ -39,6 +39,7 @@ public class GameController {
                 continue;
             }
             if (Move(movement!) == true) {
+                lastMoveOrigin = movement!.From;
                 UpdateGameStatus();
                 switchPlayer();
             }
@@ -49,7 +50,7 @@ public class GameController {
         }
 
         if (_gameStatus == GameStatus.Finished) {
-            _display.DisplayBoard(_board, lastMovementOrigin);
+            _display.DisplayBoard(_board, lastMoveOrigin);
             _display.DisplayMessage("Game Over.");
             Player? winner = _players.Find(player => player.Status == PlayerStatus.Won);
             Player? resignedPlayer = _players.Find(player => player.Status == PlayerStatus.Resigned);
