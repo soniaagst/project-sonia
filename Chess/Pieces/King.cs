@@ -26,41 +26,34 @@ public class King : Piece {
             }
         }
 
-        // Check for castling
-        if (!IsMoved && !IsChecked) {
-            TryAddCastlingMove(board, ref validMoves, true);  // Short Castle
-            TryAddCastlingMove(board, ref validMoves, false); // Long Castle
+        if (!IsMoved && !IsChecked) { // or !IsUnderAttack ?
+            TryAddCastlingMove(board, ref validMoves, isShortCastle: true);
+            TryAddCastlingMove(board, ref validMoves, isShortCastle: false);
         }
 
         return validMoves;
     }
 
-    private void TryAddCastlingMove(Board board, ref List<Position> castleMoves, bool isShortCastle) {
-        int kingColDest = isShortCastle ? 6 : 2;  // Destination column for the king
-        int rookColStart = isShortCastle ? 7 : 0;  // Column where the rook starts
-        Position rookPos = new Position(CurrentPosition.Row, rookColStart);
-        Position kingDestination = new Position(CurrentPosition.Row, kingColDest);
+    private void TryAddCastlingMove(Board board, ref List<Position> validMoves, bool isShortCastle) {
+        int kingDestCol = isShortCastle? 6 : 2;
+        int rookStartCol = isShortCastle? 7 : 0;
+        int step = isShortCastle? 1 : -1;
+        int row = CurrentPosition.Row;
 
-        if (CanCastle(board, rookPos)) {
-            castleMoves.Add(kingDestination);
-        }
-    }
+        Position rookPos = new Position(row, rookStartCol);
+        Position kingDestination = new Position(row, kingDestCol);
 
-    private bool CanCastle(Board board, Position rookPos) {
-        Piece? piece = board.GetPieceAt(rookPos);
-
-        if (piece is Rook rook && rook.IsMoved is false) {
-            int step = rookPos.Col > CurrentPosition.Col ? 1 : -1;
+        Piece? rook = board.GetPieceAt(rookPos);
+        if (rook is Rook && rook.IsMoved is false) {
 
             for (int col = CurrentPosition.Col + step; col != rookPos.Col; col += step) {
-                Position betweenPos = new Position(CurrentPosition.Row, col);
+                Position betweenPos = new Position(row, col);
 
                 if (board.GetPieceAt(betweenPos) is not null || board.IsUnderAttack(betweenPos, Color)) {
-                    return false;
+                    return;
                 }
             }
-            return true;
+            validMoves.Add(kingDestination);
         }
-        return false;
     }
 }

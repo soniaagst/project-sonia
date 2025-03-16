@@ -49,10 +49,12 @@ public class Board {
         promotedPawn = null;
         if (movingPiece == null) return false;
         if (movingPiece is Pawn pawn) pawn.CanEnPassant = false;
-        // if a pawn reached the border, it's a promotion
+
+        // if a pawn reached the edge, it's a promotion
         if (movingPiece is Pawn && (newPosition.Row == 0 || newPosition.Row == 7)) {
             promotedPawn = (Pawn)movingPiece;
         }
+
         // // If a pawn moves two steps forward, the enemy's pawn at immidiate side can en passant
         // if (movingPiece is Pawn && Math.Abs(newPosition.Row - currentPosition.Row) == 2) {
         //     List<Position> adjacentPositions = [new (newPosition.Row, newPosition.Col-1), new (newPosition.Row, newPosition.Col + 1)];
@@ -62,16 +64,17 @@ public class Board {
         //         }
         //     }
         // }
-        // If King moves two steps, it's a castle
+
+        // If King moves two steps, it's a castle. Move Rook too.
         if (movingPiece is King king && Math.Abs(currentPosition.Col - newPosition.Col) == 2) {
             HandleCastling(king, newPosition);
-        } else {
-            // Normal move
-            _grid[newPosition.Row, newPosition.Col] = movingPiece;
-            _grid[currentPosition.Row, currentPosition.Col] = null;
-            movingPiece.CurrentPosition = newPosition;
-            movingPiece.IsMoved = true;
-        }
+        } 
+
+        // Normal move
+        _grid[newPosition.Row, newPosition.Col] = movingPiece;
+        _grid[currentPosition.Row, currentPosition.Col] = null;
+        movingPiece.CurrentPosition = newPosition;
+        movingPiece.IsMoved = true;
         return true;
     }
 
@@ -87,29 +90,26 @@ public class Board {
         _grid[position.Row, position.Col] = promotedPiece;
     }
 
-    private void HandleCastling(King king, Position newKingPos) {
-        int direction = newKingPos.Col > king.CurrentPosition.Col ? 1 : -1; // Short or long castle
-        int rookCol = direction == 1 ? 7 : 0;
-        Position rookOldPos = new Position(king.CurrentPosition.Row, rookCol);
-        Position rookNewPos = new Position(king.CurrentPosition.Row, king.CurrentPosition.Col + direction);
+    private void HandleCastling(King king, Position kingNewPos) {
+        int direction = kingNewPos.Col > king.CurrentPosition.Col ? 1 : -1; // Short castle to the right
+        int rookOldCol = direction == 1? 7 : 0;
+        int rookNewCol = direction == 1? 5 : 3;
+        Position rookOldPos = new Position(king.CurrentPosition.Row, rookOldCol);
+        Position rookNewPos = new Position(king.CurrentPosition.Row, rookNewCol);
 
-        // Move King
-        _grid[newKingPos.Row, newKingPos.Col] = king;
-        _grid[king.CurrentPosition.Row, king.CurrentPosition.Col] = null;
-        king.CurrentPosition = newKingPos;
-
-        // Move Rook
+        // Move Rook (King already moved by normal move)
         Piece? rook = GetPieceAt(rookOldPos);
         if (rook is Rook) {
             _grid[rookNewPos.Row, rookNewPos.Col] = rook;
             _grid[rookOldPos.Row, rookOldPos.Col] = null;
             rook.CurrentPosition = rookNewPos;
+            rook.IsMoved = true;
         }
     }
 
     public bool IsUnderAttack(Position pos, PieceColor color) {
         foreach (var enemyPiece in _grid) {
-            if (enemyPiece is not null && enemyPiece.Color != color) { // Only check enemy pieces
+            if (enemyPiece is not null && enemyPiece.Color != color) {
                 if (enemyPiece is King) continue;
                 List<Position> enemyMoves = enemyPiece.GetValidMoves(this);
                 if (enemyMoves.Contains(pos)) {
