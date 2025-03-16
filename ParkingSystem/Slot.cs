@@ -1,3 +1,4 @@
+namespace ParkingSystem;
 public class Slot {
     public int SlotNumber {get;}
     public VehicleType AllowedType {get;}

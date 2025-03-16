@@ -1,3 +1,4 @@
+namespace ParkingSystem;
 public class Vehicle {
     public VehicleType Type {get;}
     public string LicensePlate {get;}

@@ -1,7 +1,8 @@
-public class AntarmukaVehicle {
+namespace ParkingSystem;
+public class AntarmukaParkingSys {
     private List<Vehicle> _vehicles;
     private ParkingLot _parkingLot;
-    public AntarmukaVehicle(ParkingLot parkingLot) {
+    public AntarmukaParkingSys(ParkingLot parkingLot) {
         _vehicles = Database.Vehicles;
         _parkingLot = parkingLot;
     }
@@ -40,7 +41,11 @@ public class AntarmukaVehicle {
         return  _parkingLot.ParkVehicle(vehicle);
     }
 
-    public double? UnparkVehicle(Vehicle vehicle, Karcis karcis) {
-        return _parkingLot.RemoveVehicle(vehicle, karcis);
+    public double? UnparkVehicle(string licensePlate, string karcisId) {
+        Vehicle? vehicle = _vehicles.FirstOrDefault(vehic => vehic.LicensePlate == licensePlate);
+        if (vehicle is not null) {
+            return _parkingLot.RemoveVehicle(vehicle, karcisId);
+        }
+        return null;
     }
 }

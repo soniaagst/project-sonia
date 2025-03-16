@@ -1,3 +1,4 @@
+namespace ParkingSystem;
 public sealed class ParkingLot {
     private List<Slot> Slots = new();
     private Dictionary<string, Karcis> validKarcis = new();
@@ -29,25 +30,30 @@ public sealed class ParkingLot {
         }
     }
 
-    internal double? RemoveVehicle(Vehicle vehicle, Karcis karcis) {
-        bool validated = validKarcis.ContainsKey(vehicle.LicensePlate) && (vehicle.LicensePlate == karcis.Vehicle.LicensePlate);
-        Slot? occupiedSlot = Slots.Find(slot => slot.ParkedVehicle?.LicensePlate == vehicle.LicensePlate);
+    internal double? RemoveVehicle(Vehicle vehicle, string karcisId) {
+        Karcis? karcis = validKarcis.Values.FirstOrDefault( k=> k.Id == karcisId);
 
-        if (!validated || occupiedSlot == null) {
-            Console.WriteLine("Invalid ticket or vehicle not found.");
-            return null;
-        }
-        else {
-            occupiedSlot.RemoveVehicle();
-            karcis.EndParking();
-            validKarcis.Remove(vehicle.LicensePlate);
-            double fee = karcis.CalculateFee();
+        if (karcis is not null) {
+            bool validated = validKarcis.ContainsKey(vehicle.LicensePlate) && (vehicle.LicensePlate == karcis.Vehicle.LicensePlate);
+            Slot? occupiedSlot = Slots.Find(slot => slot.ParkedVehicle?.LicensePlate == vehicle.LicensePlate);
 
-            Console.WriteLine($"Vehicle {vehicle.LicensePlate} exited.");
-            Console.WriteLine($"Enter time: {karcis.EnterTime}");
-            Console.WriteLine($"Exit time: {karcis.ExitTime}");
-            Console.WriteLine($"Parking fee: Rp{fee}");
-            return fee;
+            if (!validated || occupiedSlot == null) {
+                Console.WriteLine("Invalid ticket or vehicle not found.");
+                return null;
+            }
+            else {
+                occupiedSlot.RemoveVehicle();
+                karcis.EndParking();
+                validKarcis.Remove(vehicle.LicensePlate);
+                double fee = karcis.CalculateFee();
+
+                Console.WriteLine($"Vehicle {vehicle.LicensePlate} exited.");
+                Console.WriteLine($"Enter time: {karcis.EnterTime}");
+                Console.WriteLine($"Exit time: {karcis.ExitTime}");
+                Console.WriteLine($"Parking fee: Rp{fee}");
+                return fee;
+            }
         }
+        return null;
     }
 }
