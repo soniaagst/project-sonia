@@ -132,4 +132,18 @@ public class Board {
         }
         return king;
     }
+
+    public Piece? SimulateMove(Position from, Position to) {
+        Piece? killedPiece = GetPieceAt(to);
+
+        _grid[to.Row, to.Col] = _grid[from.Row, from.Col];
+        _grid[from.Row, from.Col] = null;
+        
+        return killedPiece;
+    }
+
+    public void UndoSimulation(Position origin, Position simulatedMove, Piece? killedPiece) {
+        _grid[origin.Row, origin.Col] = _grid[simulatedMove.Row, simulatedMove.Col];
+        _grid[simulatedMove.Row, simulatedMove.Col] = killedPiece;
+    }
 }

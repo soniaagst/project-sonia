@@ -26,7 +26,7 @@ public class King : Piece {
             }
         }
 
-        if (!IsMoved && !IsChecked) { // or !IsUnderAttack ?
+        if (!IsMoved && !IsChecked) {
             TryAddCastlingMove(board, ref validMoves, isShortCastle: true);
             TryAddCastlingMove(board, ref validMoves, isShortCastle: false);
         }
