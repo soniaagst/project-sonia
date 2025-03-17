@@ -1,7 +1,9 @@
 public class Pawn : Piece {
     public bool CanEnPassant {get; set;}
+    public bool JustForwardTwo {get; set;}
     public Pawn(PieceColor color, Position position) : base(color, position) {
         CanEnPassant = false;
+        JustForwardTwo = false;
     }
 
     public override List<Position> GetValidMoves(Board board) {
@@ -26,24 +28,15 @@ public class Pawn : Piece {
         foreach (var diag in diagonals) {
             if (Board.IsInsideBoard(diag)) {
                 Piece? targetPiece = board.GetPieceAt(diag);
+                // Normal killing
                 if (targetPiece != null && targetPiece.Color != Color) {
                     validmoves.Add(diag);
                 }
-            }
-        }
-        // En passant
-        Position[] adjacentPositions = {
-            new Position(CurrentPosition.Row, CurrentPosition.Col + 1),
-            new Position(CurrentPosition.Row, CurrentPosition.Col - 1)
-        };
-        if (CanEnPassant) {
-            foreach (var adjacentPos in adjacentPositions) {
-                Piece? targetPiece = board.GetPieceAt(adjacentPos);
-                if (targetPiece != null && targetPiece.Color != Color) {
-                    foreach (var diag in diagonals) {
-                        if (diag.Col == targetPiece.CurrentPosition.Col) {
-                            validmoves.Add(diag);
-                        }
+                // En Passant
+                if (CanEnPassant && targetPiece == null) {
+                    Position behind = new Position(diag.Row - direction, diag.Col);
+                    if (board.GetPieceAt(behind) is Pawn enemyPawn && enemyPawn.Color != Color && enemyPawn.JustForwardTwo) {
+                        validmoves.Add(diag);
                     }
                 }
             }

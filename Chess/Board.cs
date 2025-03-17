@@ -48,22 +48,36 @@ public class Board {
         killedPiece = GetPieceAt(newPosition);
         promotedPawn = null;
         if (movingPiece == null) return false;
-        if (movingPiece is Pawn pawn) pawn.CanEnPassant = false;
+
+        if (movingPiece is Pawn movingPawn) movingPawn.JustForwardTwo = false;
 
         // if a pawn reached the edge, it's a promotion
         if (movingPiece is Pawn && (newPosition.Row == 0 || newPosition.Row == 7)) {
             promotedPawn = (Pawn)movingPiece;
         }
 
-        // // If a pawn moves two steps forward, the enemy's pawn at immidiate side can en passant
-        // if (movingPiece is Pawn && Math.Abs(newPosition.Row - currentPosition.Row) == 2) {
-        //     List<Position> adjacentPositions = [new (newPosition.Row, newPosition.Col-1), new (newPosition.Row, newPosition.Col + 1)];
-        //     foreach (var adjacentPosition in adjacentPositions) {
-        //         if (GetPieceAt(adjacentPosition) is Pawn enemyPawn && enemyPawn.Color != movingPiece.Color && IsInsideBoard(adjacentPosition)) {
-        //             enemyPawn.CanEnPassant = true;
-        //         }
-        //     }
-        // }
+        // If a pawn just moves two steps forward, the enemy's pawn at immidiate side can en passant
+        if (movingPiece is Pawn justforwardtwoPawn && Math.Abs(newPosition.Row - currentPosition.Row) == 2) {
+            justforwardtwoPawn.JustForwardTwo = true;
+            List<Position> adjacentPositions = [new (newPosition.Row, newPosition.Col-1), new (newPosition.Row, newPosition.Col + 1)];
+            foreach (var adjacentPosition in adjacentPositions) {
+                if (GetPieceAt(adjacentPosition) is Pawn enemyPawn && enemyPawn.Color != movingPiece.Color && IsInsideBoard(adjacentPosition)) {
+                    enemyPawn.CanEnPassant = true;
+                }
+            }
+        }
+
+        // En Passant
+        if (movingPiece is Pawn enpassantPawn && enpassantPawn.CanEnPassant && Math.Abs(newPosition.Col - currentPosition.Col) == 1) {
+            int stepback = enpassantPawn.Color == PieceColor.White? 1 : -1;
+            Position behind = new Position(newPosition.Row + stepback, newPosition.Col);
+            if (GetPieceAt(behind) is Pawn enemyPawn && enemyPawn?.Color != enpassantPawn.Color) {
+                    killedPiece = enemyPawn;
+            }
+            else return false;
+        }
+
+        if (movingPiece is Pawn movedPawn) movedPawn.CanEnPassant = false;
 
         // If King moves two steps, it's a castle. Move Rook too.
         if (movingPiece is King king && Math.Abs(currentPosition.Col - newPosition.Col) == 2) {
@@ -71,6 +85,9 @@ public class Board {
         } 
 
         // Normal move
+        if (killedPiece is not null) {
+            _grid[killedPiece.CurrentPosition.Row, killedPiece.CurrentPosition.Col] = null;
+        }
         _grid[newPosition.Row, newPosition.Col] = movingPiece;
         _grid[currentPosition.Row, currentPosition.Col] = null;
         movingPiece.CurrentPosition = newPosition;

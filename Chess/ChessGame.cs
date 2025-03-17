@@ -61,17 +61,16 @@ public class GameController {
             Player opponent = _players[1-_currentTurnIndex];
 
             if (_currentPlayer.Status == PlayerStatus.Checkmate) {
-                _display.DisplayMessage($"Checkmate! {opponent.Name} wins!");
+                _display.DisplayMessage($"CHECKMATE! {opponent.Name} wins!");
             }
             else {
-                _display.DisplayMessage("Game Over.");
                 if (_currentPlayer.Status == PlayerStatus.Resigned) {
                     _display.DisplayMessage($"{_currentPlayer.Name} has resigned. {opponent.Name} wins!");
                 }
                 else if (_currentPlayer.Status == PlayerStatus.Stalemate) {
                     _display.DisplayMessage($"Stalemate! The game is draw.");
                 }
-                else _display.DisplayMessage("It's a tie.");
+                else _display.DisplayMessage("Game Over. It's a tie.");
             }
         }
         
@@ -103,8 +102,6 @@ public class GameController {
         if (piece is not null && piece.Color == _currentPlayer.Color) {
             List<Movement> legalMoves = GetLegalMoves(_currentPlayer);
             if (legalMoves.Contains(move)) return true;
-            // List<Position> validMoves = piece.GetValidMoves(_board);
-            // if (validMoves.Contains(move.To)) return true;
         }
         return false;
     }
@@ -149,7 +146,7 @@ public class GameController {
         if (!IsInCheck(_currentPlayer)) _currentPlayer.Status = PlayerStatus.Normal;
         if (!IsInCheck(opponent)) opponent.Status = PlayerStatus.Normal;
 
-        if (GetLegalMoves(opponent) is null) {
+        if (GetLegalMoves(opponent).Count == 0) {
             if (IsInCheck(opponent)) {
                 opponent.Status = PlayerStatus.Checkmate;
                 _currentPlayer.Status = PlayerStatus.Won;
