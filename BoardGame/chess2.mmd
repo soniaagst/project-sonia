@@ -12,14 +12,16 @@ classDiagram
         - void Move(Movement)
         - void Kill(Piece targetPiece)
         - void HandlePromotion(Pawn pawn)
-        - Piece CreatePromotedPiece(PromoteOption choice, PieceColor color, Position position)
+        - Piece CreatePromotedPiece(PromoteOption choice, Colors color, Position position)
         - void UpdateGameStatus()
         - bool IsInCheck(Player player)
-        - bool IsValidMove(Movement)
+        - bool IsInsufficientMaterial()
+        - bool IsLegalMove(Movement)
+        - List~Movement~ GetLegalMove(Player)
     }
 
     class Display {
-        + void DisplayBoard(Board board)
+        + void DisplayBoard(Board board, Position? lastMoveOrigin)
         + void DisplayMessage(string message)
         + string AskNonNullInput(string message)
         + bool TryParseInput(string input, out Movement? movement)
@@ -36,26 +38,27 @@ classDiagram
         + bool MovePiece(Position currentPos, Position newPos, out Piece? killedPiece, out Pawn? promotedPawn)
         + void KillPiece(Piece targetPiece)
         + void ReplacePiece(Pawn pawn, Piece promotedPiece)
-        + bool IsUnderAttack(Position position, PieceColor color)
-        + bool IsFriendlyPieceAt(Position position, PieceColor color)
-        + King FindKing(PieceColor color)
+        + bool IsUnderAttack(Position position, Colors color)
+        + bool IsFriendlyPieceAt(Position position, Colors color)
+        + King? FindKing(Colors color)
         + void HandleCastling(King king)
-        + void HandleEnPassant()
+        + void SimulateMove(Position from, Position to)
+        + void UndoSimulation(Position origin, Position simulatedmove, Piece? killedPiece)
     }
 
     class Piece {
         <<abstract>>
-        + PieceColor Color
+        + Colors Color
         + bool IsKilled
         + bool IsMoved
         + Position CurrentPosition
-        + Piece(PieceColor color, Position position)
+        + Piece(Colors color, Position position)
         + abstract List<Position> GetValidMoves(Board board)
     }
 
     class Pawn {
-        + bool CanPromote
         + bool CanEnPassant
+        + bool JustForwardTwo
         + override GetValidMoves()
     }
 
@@ -77,19 +80,20 @@ classDiagram
 
     class King {
         + bool IsChecked
-        + bool CanCastle
         + override GetValidMoves()
+        - void TryAddCastlingMove()
     }
 
     class Player {
         + string Name
-        + PieceColor Color
+        + Colors Color
         + PlayerStatus Status
-        + bool HasValidMove
-        + Player(string name, PieceColor color)
+        + Player(string name, Colors color)
+        + bool HasValidMove()
     }
 
     class Movement {
+        <<struct>>
         + position From
         + position To
     }
@@ -99,6 +103,7 @@ classDiagram
         + int Row
         + int Col
         + Position(int row, int col)
+        + Colors GetSquareColor()
     }
 
     class GameStatus {
@@ -121,7 +126,7 @@ classDiagram
         Bishop, Knight
     }
 
-    class PieceColor {
+    class Colors {
         <<enum>>
         White, Black
     }
@@ -129,9 +134,18 @@ classDiagram
     class IPlayer {
         <<interface>>
         + string Name
-        + PieceColor Color
+        + Colors Color
         + PlayerStatus Status
         + bool HasValidMove ()
+    }
+
+    class IDisplay {
+        <<interface>>
+        + void DisplayBoard(Board board)
+        + void DisplayMessage(string message) 
+        + string AskNonNullInput(string message)
+        + bool TryParseMove(string input, out Movement? movement)
+        + PromoteOption AskPromotionChoice()
     }
 
     GameController --> Board
@@ -147,11 +161,12 @@ classDiagram
     Piece <|-- King
     
     Player --|> IPlayer
+    Display --|> IDisplay
     
     Movement -- GameController
-    Display -- GameController
+    IDisplay -- GameController
     PromoteOption -- GameController
     GameStatus -- GameController
     PlayerStatus -- Player
     Position --Piece
-    PieceColor -- Piece
+    Colors -- Piece
