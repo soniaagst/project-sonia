@@ -23,7 +23,7 @@ public class GameController {
 
         while (_gameStatus == GameStatus.Running) {
             _display.DisplayBoard(_board, lastMoveOrigin);
-            _display.DisplayMessage("Enter 'exit' to quit the game.");
+            _display.DisplayMessage("Enter 'exit' to quit the game. Enter 'draw' to end the game in a tie.");
 
             if (_currentPlayer.Status == PlayerStatus.Checked) {
                 _display.DisplayMessage("You're in CHECK! Save your King.");
@@ -36,6 +36,14 @@ public class GameController {
                 _currentPlayer.Status = PlayerStatus.Resigned;
                 _players[1-_currentTurnIndex].Status = PlayerStatus.Won;
                 _gameStatus= GameStatus.Finished;
+                break;
+            }
+
+            if (input == "DRAW") {
+                _display.DisplayMessage("Player agreed to draw.");
+                _currentPlayer.Status = PlayerStatus.Draw;
+                _players[1-_currentTurnIndex].Status = PlayerStatus.Draw;
+                _gameStatus = GameStatus.Finished;
                 break;
             }
 
@@ -68,7 +76,7 @@ public class GameController {
                     _display.DisplayMessage($"{_currentPlayer.Name} has resigned. {opponent.Name} wins!");
                 }
                 else if (_currentPlayer.Status == PlayerStatus.Stalemate) {
-                    _display.DisplayMessage($"Stalemate! The game is draw.");
+                    _display.DisplayMessage("Stalemate! The game is draw.");
                 }
                 else _display.DisplayMessage("Game Over. It's a tie.");
             }
@@ -106,7 +114,7 @@ public class GameController {
         return false;
     }
 
-    public bool Move(Movement movement) {
+    private bool Move(Movement movement) {
         if (!IsLegalMove(movement)) return false;
 
         else if (_board.MovePiece(movement.From, movement.To, out Piece? killedPiece, out Pawn? promotedPawn)) {
@@ -164,13 +172,36 @@ public class GameController {
             opponent.Status = PlayerStatus.Checked;
             return;
         }
+
+        if (IsInsufficientMaterial()) {
+            opponent.Status = PlayerStatus.Draw;
+            _currentPlayer.Status = PlayerStatus.Draw;
+            _gameStatus = GameStatus.Finished;
+            return;
+        }
     }
 
-    public bool IsInCheck(Player player) {
+    private bool IsInCheck(Player player) {
         King king = _board.FindKing(player.Color)!;
         bool result = _board.IsUnderAttack(king.CurrentPosition, king.Color);
         if (result) king.IsChecked = true;
         return result;
+    }
+
+    private bool IsInsufficientMaterial() {
+        List<Piece> remainingPieces = [];
+        foreach(var piece in _board.GetBoard()) if (piece != null) remainingPieces.Add(piece);
+
+        // king vs king
+        if (remainingPieces.All(p => p is King)) return true;
+
+        // kn vs k OR kb vs k
+        if (remainingPieces.Count == 3 && remainingPieces.Any(p => p is Knight or Bishop) && remainingPieces.Any(p => p is King))
+            return true;
+
+        // kb vs kb (same color), kb vs kn, kn vs kn
+
+        return false;
     }
 
 }
