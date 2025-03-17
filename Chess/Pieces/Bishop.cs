@@ -1,5 +1,5 @@
 public class Bishop : Piece {
-    public Bishop(PieceColor color, Position position) : base(color, position) {}
+    public Bishop(Colors color, Position position) : base(color, position) {}
 
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validMoves = new List<Position>();

@@ -1,14 +1,14 @@
 public class Pawn : Piece {
     public bool CanEnPassant {get; set;}
     public bool JustForwardTwo {get; set;}
-    public Pawn(PieceColor color, Position position) : base(color, position) {
+    public Pawn(Colors color, Position position) : base(color, position) {
         CanEnPassant = false;
         JustForwardTwo = false;
     }
 
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validmoves = new();
-        int direction = (Color == PieceColor.White) ? -1 : 1; // If pawn color is white, move up. If black, move down.
+        int direction = (Color == Colors.White) ? -1 : 1; // If pawn color is white, move up. If black, move down.
 
         Position forwardOne = new Position(CurrentPosition.Row + direction, CurrentPosition.Col);
         if (Board.IsInsideBoard(forwardOne) && board.GetPieceAt(forwardOne) == null) {

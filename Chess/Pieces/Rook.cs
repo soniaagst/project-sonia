@@ -1,6 +1,6 @@
 
 public class Rook : Piece {
-    public Rook(PieceColor color, Position position) : base(color, position) {}
+    public Rook(Colors color, Position position) : base(color, position) {}
 
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validMoves = new();

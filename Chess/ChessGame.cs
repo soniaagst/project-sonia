@@ -10,8 +10,8 @@ public class GameController {
     public GameController(Display display, string whiteName = "WhitePlayer", string blackName = "BlackPlayer") {
         _gameStatus = GameStatus.Running;
         _board = new();
-        _players.Add(new Player(whiteName, PieceColor.White));
-        _players.Add(new Player(blackName, PieceColor.Black));
+        _players.Add(new Player(whiteName, Colors.White));
+        _players.Add(new Player(blackName, Colors.Black));
         _currentTurnIndex = 0;
         _currentPlayer = _players[_currentTurnIndex];
         _display = display;
@@ -141,7 +141,7 @@ public class GameController {
         _board.ReplacePiece(pawn, promotedPiece);
     }
 
-    private Piece CreatePromotedPiece(PromoteOption choice, PieceColor color, Position position) {
+    private Piece CreatePromotedPiece(PromoteOption choice, Colors color, Position position) {
         if (choice is PromoteOption.Rook) return new Rook(color, position);
         if (choice is PromoteOption.Bishop) return new Bishop(color, position);
         if (choice is PromoteOption.Knight) return new Knight(color, position);
@@ -199,7 +199,32 @@ public class GameController {
         if (remainingPieces.Count == 3 && remainingPieces.Any(p => p is Knight or Bishop) && remainingPieces.Any(p => p is King))
             return true;
 
-        // kb vs kb (same color), kb vs kn, kn vs kn
+        if (remainingPieces.Count == 4) {
+            // kb vs kb (same color)
+            if (remainingPieces.Count(p => p is Bishop) == 2) {
+                List<Piece> bishops = remainingPieces.Where(p => p is Bishop).ToList();
+                if (bishops[0].Color != bishops[1].Color) {
+                    if (bishops[0].CurrentPosition.GetSquareColor() == bishops[1].CurrentPosition.GetSquareColor())
+                        return true;
+                }
+            }
+
+            // kn vs kn
+            if (remainingPieces.Count(piece => piece is Knight) == 2) {
+                List<Piece> knights = remainingPieces.Where(piece => piece is Knight).ToList();
+                if (knights[0].Color != knights[1].Color) {
+                    return true;
+                }
+            }
+
+            // kb vs kn
+            if (remainingPieces.Any(piece => piece is Knight) && remainingPieces.Any(piece => piece is Bishop)) {
+                Piece knight = remainingPieces.Find(p => p is Knight)!;
+                Piece bishop = remainingPieces.Find(p => p is Bishop)!;
+                if (knight.Color != bishop.Color)
+                    return true;
+            }
+        }
 
         return false;
     }

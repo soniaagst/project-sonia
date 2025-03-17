@@ -1,9 +1,9 @@
 public class Player {
     public string Name {get;}
-    public PieceColor Color {get;}
+    public Colors Color {get;}
     public PlayerStatus Status {get; set;}
 
-    public Player(string name, PieceColor color) {
+    public Player(string name, Colors color) {
         Name = name;
         Color = color;
         Status = PlayerStatus.Normal;

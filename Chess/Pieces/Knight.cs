@@ -1,5 +1,5 @@
 public class Knight : Piece {
-    public Knight(PieceColor color, Position position) : base(color, position) { }
+    public Knight(Colors color, Position position) : base(color, position) { }
 
     public override List<Position> GetValidMoves(Board board) {
         List<Position> validMoves = new List<Position>();

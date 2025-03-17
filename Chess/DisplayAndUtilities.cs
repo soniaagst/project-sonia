@@ -12,7 +12,7 @@ public class Display : IDisplay {
                 }
                 else {
                     Piece piece = board.GetBoard()[row, col]!;
-                    if (piece!.Color is PieceColor.White) {
+                    if (piece!.Color is Colors.White) {
                         if (piece is Pawn) Console.Write(" ♙ ");
                         if (piece is Knight) Console.Write(" ♘ ");
                         if (piece is Bishop) Console.Write(" ♗ ");
@@ -93,7 +93,7 @@ public interface IDisplay {
     public bool TryParseMove(string input, out Movement? movement);
 }
 
-public enum PieceColor {
+public enum Colors {
     White, Black
 }
 
@@ -106,6 +106,10 @@ public struct Position {
     public int Col;
     public Position(int row, int col) {
         Row = row; Col = col;
+    }
+
+    public Colors GetSquareColor() {
+        return (Colors)((Row + Col) % 2);
     }
 }
 
