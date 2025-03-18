@@ -16,11 +16,11 @@ public abstract class Piece {
     {
         string pieceChar = GetType().ToString() switch {
             "Pawn" => "P",
-            "Knight" => "P",
-            "Bishop" => "P",
-            "Rook" => "P",
-            "Queen" => "P",
-            "King" => "P",
+            "Knight" => "N",
+            "Bishop" => "B",
+            "Rook" => "R",
+            "Queen" => "Q",
+            "King" => "K",
             _ => "?"
         };
         return pieceChar;

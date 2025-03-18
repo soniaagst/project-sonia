@@ -1,31 +1,46 @@
 public class GameController {
+    private IDisplay _display;
     private GameStatus _gameStatus;
-    public Board _board;
+    private Board _board;
     private List<IPlayer> _players = new();
     private int _currentTurnIndex;
     private IPlayer _currentTurn;
-    private IDisplay _display;
-    private Action switchTurn;
-    private int _fiftyMoveCounter = 0;
+    public event Action<IPlayer>? OnTurnChanged; // for UI
+    private int _fiftyMoveCounter = 0; // for 50-move rule
     private Dictionary<string, int> _boardHistory = []; // for threefold repetition
-    private List<HistoryUnit> _moveHistory = []; // for showing history
-    // private Dictionary<IPlayer, List<Piece>> _playerPieces = [];
+    private List<Move> _moveHistory = []; // for showing history
 
     public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer) {
-        _gameStatus = GameStatus.Running;
+        _display = display;
         _board = new();
         _players.Add(whitePlayer);
         _players.Add(blackPlayer);
         _currentTurnIndex = 0;
         _currentTurn = _players[_currentTurnIndex];
-        _display = display;
-        // _playerPieces.Add(_players[0], _board.GetPieces().Where(p => p.Color == Colors.White).ToList());
-        // _playerPieces.Add(_players[1], _board.GetPieces().Where(p => p.Color == Colors.Black).ToList());
-        switchTurn = () => { _currentTurnIndex = 1 - _currentTurnIndex; _currentTurn = _players[_currentTurnIndex];};
+        _gameStatus = GameStatus.Running;
+    }
+
+    private void TrimMoveHistory() {
+        if (_moveHistory.Count > 4) {
+            _moveHistory.RemoveAt(0); _moveHistory.RemoveAt(0);
+        }
+    }
+
+    private void SwitchTurn() {
+        _currentTurnIndex = 1 - _currentTurnIndex;
+        _currentTurn = _players[_currentTurnIndex];
+        OnTurnChanged?.Invoke(_currentTurn);
     }
 
     public void Play() {
         Box? lastMoveOrigin = null;
+
+        OnTurnChanged += currentPlayer => {
+            _display.DisplayBoard(_board, lastMoveOrigin);
+            _display.DisplayHistory(_moveHistory);
+            _display.DisplayMessage("Enter 'exit' to quit the game. Enter 'draw' to end the game in a tie.");
+            _display.DisplayMessage($"{currentPlayer.PlayerName}'s ({currentPlayer.Color}) turn.");
+        };
 
         while (_gameStatus == GameStatus.Running) {
             _display.DisplayBoard(_board, lastMoveOrigin);
@@ -54,16 +69,16 @@ public class GameController {
                 break;
             }
 
-            Move? movement;
+            Movement? movement;
             if (!_display.TryParseMove(input, out movement)) {
                 _display.DisplayMessage("Invalid input or move. Try again.");
                 continue;
             }
-            if (MakeMove(movement!.Value) == true) {
+            if (PlayerMove(movement!.Value) == true) {
                 lastMoveOrigin = movement!.Value.From;
                 SaveBoardState();
                 SetPlayerGameStatus();
-                switchTurn();
+                SwitchTurn();
             }
             else {
                 _display.DisplayMessage("Invalid move. Try again.");
@@ -93,8 +108,8 @@ public class GameController {
         
     }
 
-    private List<Move> GetLegalMoves(IPlayer player) {
-        List<Move> legalMoves = [];
+    private List<Movement> GetLegalMoves(IPlayer player) {
+        List<Movement> legalMoves = [];
         foreach (var piece in _board.GetBoard()) {
             if (piece?.Color == player.Color) {
                 List<Box> validMoves = piece.GetValidMoves(_board);
@@ -103,7 +118,7 @@ public class GameController {
 
                     Piece? killedPiece = _board.SimulateMove(originalPos, simulatedNewPos);
                     if (!IsChecked(player)) {
-                        Move newMove = new(originalPos, simulatedNewPos);
+                        Movement newMove = new(originalPos, simulatedNewPos);
                         legalMoves.Add(newMove);
                     }
                     _board.UndoSimulation(originalPos, simulatedNewPos, killedPiece);
@@ -114,66 +129,71 @@ public class GameController {
         return legalMoves;
     }
 
-    private bool ValidateMove(Move move) {
+    private bool ValidateMove(Movement move) {
         Piece? piece = _board.GetPieceAt(move.From);
         if (piece is not null && piece.Color == _currentTurn.Color) {
-            List<Move> legalMoves = GetLegalMoves(_currentTurn);
+            List<Movement> legalMoves = GetLegalMoves(_currentTurn);
             if (legalMoves.Contains(move)) return true;
         }
         return false;
     }
 
-    private bool MakeMove(Move move) {
+    private bool PlayerMove(Movement move) {
         if (!ValidateMove(move)) return false;
 
-        else if (_board.MovePiece(move.From, move.To, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn)) {
-            bool result = true;
+        Action<Piece?, Piece?, Pawn?> onMoveMade = (movingPiece, killedPiece, promotedPawn) => {
+            MakeMove(movingPiece!, killedPiece, promotedPawn, move);
+        };
 
-            Piece? promotedPiece = null;
+        return _board.MovePiece(move.From, move.To, onMoveMade);
+    }
 
-            if (killedPiece is not null) {
-                Kill(killedPiece);
-            }
-
-            if (promotedPawn is not null) {
-                PromoteOption choice = _display.AskPromotionChoice();
-                promotedPiece = CreatePromotedPiece(choice, promotedPawn.Color, promotedPawn.CurrentPosition);
-                _board.ReplacePiece(promotedPawn, promotedPiece);
-            }
-
-            if (killedPiece is null && movingPiece is not Pawn) {
-                _fiftyMoveCounter++;
-            }
-            else _fiftyMoveCounter = 0;
-
-            HistoryUnit historyUnit = new() {
-                MovingPiece = movingPiece,
-                Destination = move.To,
-                IsKill = killedPiece != null,
-                IsCheck = IsChecked(_players[1 - _currentTurnIndex]),
-                IsShortCastle = movingPiece is King && move.To.Col - move.From.Col == 2,
-                IsLongCastle = movingPiece is King && move.To.Col - move.From.Col == -2,
-                IsPromotion = promotedPawn != null,
-                PromotedPiece = promotedPiece
-            };
-            _moveHistory.Add(historyUnit);
-
-            return result;
+    private void MakeMove(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move) {
+        if (killedPiece is not null) {
+            _board.KillPiece(killedPiece);
         }
-        
-        else return false;
+
+        Piece? promotedPiece = null;
+        if (promotedPawn is not null) {
+            promotedPiece = Promote(promotedPawn);
+        }
+
+        _fiftyMoveCounter = (killedPiece is null && movingPiece is not Pawn) ? (_fiftyMoveCounter + 1) : 0;
+
+        _moveHistory.Add(new Move {
+            Piece = movingPiece,
+            Destination = move.To,
+            IsKill = killedPiece != null,
+            IsCheck = IsChecked(_players[1 - _currentTurnIndex]),
+            IsShortCastle = movingPiece is King && move.To.X - move.From.X == 2,
+            IsLongCastle = movingPiece is King && move.To.X - move.From.X == -2,
+            IsPromotion = promotedPawn != null,
+            PromotedPiece = promotedPiece
+        });
+        TrimMoveHistory();
     }
 
-    private void Kill(Piece targetPiece) {
-        _board.KillPiece(targetPiece);
-        targetPiece.IsKilled = true;
+    private Piece Promote(Pawn promotedPawn) {
+        PromoteOption choice = _display.AskPromotionChoice();
+        // create promotion piece
+        if (choice is PromoteOption.Rook) return new Rook(promotedPawn.Color, promotedPawn.CurrentPosition);
+        if (choice is PromoteOption.Bishop) return new Bishop(promotedPawn.Color, promotedPawn.CurrentPosition);
+        if (choice is PromoteOption.Knight) return new Knight(promotedPawn.Color, promotedPawn.CurrentPosition);
+        Piece promotedPiece = new Queen(promotedPawn.Color, promotedPawn.CurrentPosition);
+        // replace pawn
+        Box position = promotedPawn.CurrentPosition;
+        _board.KillPiece(promotedPawn);
+        _board.GetBoard()[position.Y, position.X] = promotedPiece;
+        return promotedPiece;
     }
 
-    private Piece CreatePromotedPiece(PromoteOption choice, Colors color, Box position) {
-        if (choice is PromoteOption.Rook) return new Rook(color, position);
-        if (choice is PromoteOption.Bishop) return new Bishop(color, position);
-        if (choice is PromoteOption.Knight) return new Knight(color, position);
-        else return new Queen(color, position);
+    private void SaveBoardState() {
+        string boardState = _board.GenerateBoardState();
+        if (_boardHistory.ContainsKey(boardState)) {
+            _boardHistory[boardState]++;
+        } else {
+            _boardHistory[boardState] = 1;
+        }
     }
 
     private void SetPlayerGameStatus() {
@@ -254,15 +274,6 @@ public class GameController {
         }
 
         return false;
-    }
-
-    private void SaveBoardState() {
-        string boardState = _board.GenerateBoardState();
-        if (_boardHistory.ContainsKey(boardState)) {
-            _boardHistory[boardState]++;
-        } else {
-            _boardHistory[boardState] = 1;
-        }
     }
 
     private bool IsThreefoldRepetition() {

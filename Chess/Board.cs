@@ -42,30 +42,32 @@ public class Board {
     }
 
     public Piece? GetPieceAt(Box position) {
-        return _boxes[position.Row, position.Col];
+        return _boxes[position.Y, position.X];
     }
 
     public static bool IsInsideBoard(Box position) {
-        return position.Row >= 0 && position.Row <= 7 && position.Col >=0 && position.Col <= 7;
+        return position.Y >= 0 && position.Y <= 7 && position.X >=0 && position.X <= 7;
     }
 
-    public bool MovePiece(Box currentPosition, Box newPosition, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn) {
-        movingPiece = GetPieceAt(currentPosition);
-        killedPiece = GetPieceAt(newPosition);
-        promotedPawn = null;
+    public bool MovePiece(Box from, Box to, Action<Piece?, Piece?, Pawn?> onMoveMade)
+    {
+        Piece? movingPiece = GetPieceAt(from);
+        Piece? killedPiece = GetPieceAt(to);
+        Pawn? promotedPawn = null;
+
         if (movingPiece == null) return false;
 
         if (movingPiece is Pawn movingPawn) movingPawn.JustForwardTwo = false;
 
-        // if a pawn reached the edge, it's a promotion
-        if (movingPiece is Pawn pawn && (newPosition.Row == 0 || newPosition.Row == 7)) {
+        // Promotion
+        if (movingPiece is Pawn pawn && (to.Y == 0 || to.Y == 7)) {
             promotedPawn = pawn;
         }
 
         // If a pawn just moves two steps forward, the enemy's pawn at immidiate side can en passant
-        if (movingPiece is Pawn justforwardtwoPawn && Math.Abs(newPosition.Row - currentPosition.Row) == 2) {
+        if (movingPiece is Pawn justforwardtwoPawn && Math.Abs(to.Y - from.Y) == 2) {
             justforwardtwoPawn.JustForwardTwo = true;
-            List<Box> adjacentPositions = [new (newPosition.Row, newPosition.Col-1), new (newPosition.Row, newPosition.Col + 1)];
+            List<Box> adjacentPositions = [new (to.Y, to.X-1), new (to.Y, to.X + 1)];
             foreach (var adjacentPosition in adjacentPositions) {
                 if (GetPieceAt(adjacentPosition) is Pawn enemyPawn && enemyPawn.Color != movingPiece.Color && IsInsideBoard(adjacentPosition)) {
                     enemyPawn.CanEnPassant = true;
@@ -74,9 +76,9 @@ public class Board {
         }
 
         // En Passant
-        if (movingPiece is Pawn enpassantPawn && enpassantPawn.CanEnPassant && Math.Abs(newPosition.Col - currentPosition.Col) == 1) {
+        if (movingPiece is Pawn enpassantPawn && enpassantPawn.CanEnPassant && Math.Abs(to.X - from.X) == 1) {
             int stepback = enpassantPawn.Color == Colors.White? 1 : -1;
-            Box behind = new Box(newPosition.Row + stepback, newPosition.Col);
+            Box behind = new Box(to.Y + stepback, to.X);
             if (GetPieceAt(behind) is Pawn enemyPawn && enemyPawn?.Color != enpassantPawn.Color) {
                     killedPiece = enemyPawn;
             }
@@ -85,47 +87,41 @@ public class Board {
 
         if (movingPiece is Pawn movedPawn) movedPawn.CanEnPassant = false;
 
-        // If King moves two steps, it's a castle. Move Rook too.
-        if (movingPiece is King king && Math.Abs(currentPosition.Col - newPosition.Col) == 2) {
-            HandleCastling(king, newPosition);
+        // Castling
+        if (movingPiece is King king && Math.Abs(from.X - to.X) == 2) {
+            int direction = to.X - king.CurrentPosition.X; // Short castle to the right
+            int rookOldCol = direction == 1? 7 : 0;
+            int rookNewCol = direction == 1? 5 : 3;
+            Box rookOldPos = new Box(king.CurrentPosition.Y, rookOldCol);
+            Box rookNewPos = new Box(king.CurrentPosition.Y, rookNewCol);
+
+            // Move Rook (King already moved by normal move)
+            Piece? rook = GetPieceAt(rookOldPos);
+            if (rook is Rook) {
+                _boxes[rookNewPos.Y, rookNewPos.X] = rook;
+                _boxes[rookOldPos.Y, rookOldPos.X] = null;
+                rook.CurrentPosition = rookNewPos;
+                rook.IsMoved = true;
+            }
         } 
 
         // Normal move
         if (killedPiece is not null) {
-            _boxes[killedPiece.CurrentPosition.Row, killedPiece.CurrentPosition.Col] = null;
+            _boxes[killedPiece.CurrentPosition.Y, killedPiece.CurrentPosition.X] = null; 
         }
-        _boxes[newPosition.Row, newPosition.Col] = movingPiece;
-        _boxes[currentPosition.Row, currentPosition.Col] = null;
-        movingPiece.CurrentPosition = newPosition;
+
+        _boxes[to.Y, to.X] = movingPiece;
+        _boxes[from.Y, from.X] = null;
+        movingPiece.CurrentPosition = to;
         movingPiece.IsMoved = true;
+        onMoveMade?.Invoke(movingPiece, killedPiece, promotedPawn);
+
         return true;
     }
 
     public void KillPiece(Piece targetPiece) {
         targetPiece.CurrentPosition = _nowhere;
-    }
-
-    public void ReplacePiece(Pawn pawn, Piece promotedPiece) {
-        Box position = pawn.CurrentPosition;
-        pawn.CurrentPosition = _nowhere;
-        _boxes[position.Row, position.Col] = promotedPiece;
-    }
-
-    private void HandleCastling(King king, Box kingNewPos) {
-        int direction = kingNewPos.Col > king.CurrentPosition.Col ? 1 : -1; // Short castle to the right
-        int rookOldCol = direction == 1? 7 : 0;
-        int rookNewCol = direction == 1? 5 : 3;
-        Box rookOldPos = new Box(king.CurrentPosition.Row, rookOldCol);
-        Box rookNewPos = new Box(king.CurrentPosition.Row, rookNewCol);
-
-        // Move Rook (King already moved by normal move)
-        Piece? rook = GetPieceAt(rookOldPos);
-        if (rook is Rook) {
-            _boxes[rookNewPos.Row, rookNewPos.Col] = rook;
-            _boxes[rookOldPos.Row, rookOldPos.Col] = null;
-            rook.CurrentPosition = rookNewPos;
-            rook.IsMoved = true;
-        }
+        targetPiece.IsKilled = true;
     }
 
     public bool IsUnderAttack(Box pos, Colors color) {
@@ -159,15 +155,15 @@ public class Board {
     public Piece? SimulateMove(Box from, Box to) {
         Piece? killedPiece = GetPieceAt(to);
 
-        _boxes[to.Row, to.Col] = _boxes[from.Row, from.Col];
-        _boxes[from.Row, from.Col] = null;
+        _boxes[to.Y, to.X] = _boxes[from.Y, from.X];
+        _boxes[from.Y, from.X] = null;
         
         return killedPiece;
     }
 
     public void UndoSimulation(Box origin, Box simulatedMove, Piece? killedPiece) {
-        _boxes[origin.Row, origin.Col] = _boxes[simulatedMove.Row, simulatedMove.Col];
-        _boxes[simulatedMove.Row, simulatedMove.Col] = killedPiece;
+        _boxes[origin.Y, origin.X] = _boxes[simulatedMove.Y, simulatedMove.X];
+        _boxes[simulatedMove.Y, simulatedMove.X] = killedPiece;
     }
 
     public string GenerateBoardState() {

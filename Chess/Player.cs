@@ -10,11 +10,11 @@ public class Player : IPlayer {
     }
 
     public bool HasValidMove(Board board) {
-        List<Move> validMoves = [];
+        List<Movement> validMoves = [];
         foreach (var piece in board.GetBoard()) {
             if (piece?.Color == Color) {
                 foreach (var destination in piece.GetValidMoves(board)) {
-                    validMoves.Add(new Move(piece.CurrentPosition, destination));
+                    validMoves.Add(new Movement(piece.CurrentPosition, destination));
                 }
             }
         }

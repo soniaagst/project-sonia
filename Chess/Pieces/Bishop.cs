@@ -10,7 +10,7 @@ public class Bishop : Piece {
                 Box destination = CurrentPosition;
 
                 while (true) {
-                    destination = new Box(destination.Row + rowDir, destination.Col + colDir);
+                    destination = new Box(destination.Y + rowDir, destination.X + colDir);
                     if (!Board.IsInsideBoard(destination)) break;
                     
                     Piece? pieceAtDestination = board.GetPieceAt(destination);

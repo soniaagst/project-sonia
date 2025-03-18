@@ -6,7 +6,7 @@ public class Knight : Piece {
         List<List<int>> offsets = [[2,1], [2,-1], [-2,1], [-2,-1], [1,2], [1,-2], [-1,2], [-1,-2]];
 
         foreach (var offset in offsets) {
-            Box newPos = new Box(CurrentPosition.Row + offset[0], CurrentPosition.Col + offset[1]);
+            Box newPos = new Box(CurrentPosition.Y + offset[0], CurrentPosition.X + offset[1]);
 
             if (Board.IsInsideBoard(newPos)) {
                 Piece? pieceAtNewPos = board.GetPieceAt(newPos);

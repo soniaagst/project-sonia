@@ -10,11 +10,11 @@ public class Pawn : Piece {
         List<Box> validmoves = new();
         int direction = (Color == Colors.White) ? -1 : 1; // If pawn color is white, move up. If black, move down.
 
-        Box forwardOne = new Box(CurrentPosition.Row + direction, CurrentPosition.Col);
+        Box forwardOne = new Box(CurrentPosition.Y + direction, CurrentPosition.X);
         if (Board.IsInsideBoard(forwardOne) && board.GetPieceAt(forwardOne) == null) {
             validmoves.Add(forwardOne);
 
-            Box forwardTwo = new Box(CurrentPosition.Row + (2 * direction), CurrentPosition.Col);
+            Box forwardTwo = new Box(CurrentPosition.Y + (2 * direction), CurrentPosition.X);
             if (!IsMoved && Board.IsInsideBoard(forwardTwo) && board.GetPieceAt(forwardTwo) == null) {
                 validmoves.Add(forwardTwo);
             }
@@ -22,8 +22,8 @@ public class Pawn : Piece {
 
         // Killing move
         Box[] diagonals = {
-            new Box(CurrentPosition.Row + direction, CurrentPosition.Col - 1),
-            new Box(CurrentPosition.Row + direction, CurrentPosition.Col + 1)
+            new Box(CurrentPosition.Y + direction, CurrentPosition.X - 1),
+            new Box(CurrentPosition.Y + direction, CurrentPosition.X + 1)
         };
         foreach (var diag in diagonals) {
             if (Board.IsInsideBoard(diag)) {
@@ -34,7 +34,7 @@ public class Pawn : Piece {
                 }
                 // En Passant
                 if (CanEnPassant && targetPiece == null) {
-                    Box behind = new Box(diag.Row - direction, diag.Col);
+                    Box behind = new Box(diag.Y - direction, diag.X);
                     if (board.GetPieceAt(behind) is Pawn enemyPawn && enemyPawn.Color != Color && enemyPawn.JustForwardTwo) {
                         validmoves.Add(diag);
                     }

@@ -4,7 +4,7 @@ public class Display : IDisplay {
         for (int row = 0; row < 8; row++) {
             Console.Write(8-row);
             for (int col = 0; col < 8; col++) {
-                if (lastMoveOrigin?.Row == row && lastMoveOrigin?.Col == col) {
+                if (lastMoveOrigin?.Y == row && lastMoveOrigin?.X == col) {
                     Console.Write(" ＊");
                 }
                 else if (board.GetBoard()[row, col] == null) {
@@ -35,10 +35,9 @@ public class Display : IDisplay {
         Console.WriteLine("  A  B  C  D  E  F  G  H  ");
     }
 
-    public void DisplayHistory(List<HistoryUnit> movesHistory) {
-        int num = 1;
+    public void DisplayHistory(List<Move> movesHistory) {
         foreach (var item in movesHistory) {
-            string pieceChar = item.MovingPiece!.ToString();
+            string pieceChar = item.Piece!.ToString();
             string dest = item.Destination.ToString();
             string kill = item.IsKill? "x" : "";
             string check = item.IsCheck? "+" : "";
@@ -46,10 +45,6 @@ public class Display : IDisplay {
             string promotedTo = item.IsPromotion? item.PromotedPiece!.ToString() : "";
             string shortCastle = item.IsShortCastle? "O-O" : "";
             string longCastle = item.IsLongCastle? "O-O-O" : "";
-
-            if (movesHistory.IndexOf(item)%2 == 0) {
-                Console.Write($"{num}. ");
-            }
                 
             if (item.IsShortCastle || item.IsLongCastle) {
                 Console.Write($"{shortCastle}{longCastle}{check} ");
@@ -58,7 +53,6 @@ public class Display : IDisplay {
             
             if (movesHistory.IndexOf(item)%2 == 1) {
                 Console.WriteLine();
-                num++;
             }
         }
         Console.WriteLine();
@@ -87,7 +81,7 @@ public class Display : IDisplay {
         return input;
     }
 
-    public bool TryParseMove(string input, out Move? movement) {
+    public bool TryParseMove(string input, out Movement? movement) {
         if (input.Split(' ').Count() != 2) {
             movement = null;
             return false;
@@ -103,24 +97,24 @@ public class Display : IDisplay {
             (rowcol[0], rowcol[1]) = (rowcol[1], rowcol[0]);
             int row = 56 - rowcol[0];
             int col = rowcol[1] - 'A';
-            move[i].Row = row; move[i].Col = col;
+            move[i].Y = row; move[i].X = col;
         }
         if (!Board.IsInsideBoard(move[0]) || !Board.IsInsideBoard(move[1])) {
             movement = null;
             return false;
         }
-        movement = new Move(move[0], move[1]);
+        movement = new Movement(move[0], move[1]);
         return true;
     }
 }
 
 public interface IDisplay {
     public void DisplayBoard(Board board, Box? lastMoveOrigin);
-    public void DisplayHistory(List<HistoryUnit> movesHistory) ;
+    public void DisplayHistory(List<Move> movesHistory) ;
     public void DisplayMessage(string message);
     public PromoteOption AskPromotionChoice();
     public string AskNonNullInput(string? message);
-    public bool TryParseMove(string input, out Move? movement);
+    public bool TryParseMove(string input, out Movement? movement);
 }
 
 public enum Colors {
@@ -132,19 +126,19 @@ public enum GameStatus {
 }
 
 public struct Box {
-    public int Row;
-    public int Col;
+    public int Y;
+    public int X;
     public Box(int row, int col) {
-        Row = row; Col = col;
+        Y = row; X = col;
     }
 
     public Colors GetBoxColor() {
-        return (Colors)((Row + Col) % 2);
+        return (Colors)((Y + X) % 2);
     }
 
     public override readonly string ToString()
     {
-        char colLetter = Col switch {
+        char colLetter = X switch {
             0 => 'a',
             1 => 'b',
             2 => 'c',
@@ -155,7 +149,7 @@ public struct Box {
             7 => 'h',
             _ => '?'
         };
-        return $"{colLetter}{8-Row}";
+        return $"{colLetter}{8-Y}";
     }
 }
 

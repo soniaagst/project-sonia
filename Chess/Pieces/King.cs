@@ -16,7 +16,7 @@ public class King : Piece {
         }
 
         foreach (var dir in directions) {
-            Box oneStep = new Box(CurrentPosition.Row + dir[0], CurrentPosition.Col + dir[1]);
+            Box oneStep = new Box(CurrentPosition.Y + dir[0], CurrentPosition.X + dir[1]);
 
             if (Board.IsInsideBoard(oneStep) && 
                 !board.IsFriendlyPieceAt(oneStep, Color) && 
@@ -38,7 +38,7 @@ public class King : Piece {
         int kingDestCol = isShortCastle? 6 : 2;
         int rookStartCol = isShortCastle? 7 : 0;
         int step = isShortCastle? 1 : -1;
-        int row = CurrentPosition.Row;
+        int row = CurrentPosition.Y;
 
         Box rookPos = new Box(row, rookStartCol);
         Box kingDestination = new Box(row, kingDestCol);
@@ -46,7 +46,7 @@ public class King : Piece {
         Piece? rook = board.GetPieceAt(rookPos);
         if (rook is Rook && rook.IsMoved is false) {
 
-            for (int col = CurrentPosition.Col + step; col != rookPos.Col; col += step) {
+            for (int col = CurrentPosition.X + step; col != rookPos.X; col += step) {
                 Box betweenPos = new Box(row, col);
 
                 if (board.GetPieceAt(betweenPos) is not null || board.IsUnderAttack(betweenPos, Color)) {

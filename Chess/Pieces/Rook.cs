@@ -10,7 +10,7 @@ public class Rook : Piece {
             Box destination = CurrentPosition;
             
             while (true) {
-                destination = new Box(destination.Row + dir[0], destination.Col + dir[1]);
+                destination = new Box(destination.Y + dir[0], destination.X + dir[1]);
                 if (!Board.IsInsideBoard(destination)) break;
 
                 Piece? pieceAtDestination = board.GetPieceAt(destination);

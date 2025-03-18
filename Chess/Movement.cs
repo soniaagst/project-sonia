@@ -1,14 +1,14 @@
-public struct Move {
+public struct Movement {
     public  Box From {get;}
     public Box To {get;}
-    public Move(Box from, Box to) {
+    public Movement(Box from, Box to) {
         From = from;
         To = to;
     }
 }
 
-public class HistoryUnit {
-    public Piece? MovingPiece;
+public class Move {
+    public Piece? Piece;
     public Box Destination;
     public bool IsKill = false;
     public bool IsCheck = false;
