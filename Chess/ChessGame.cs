@@ -1,17 +1,17 @@
 public class GameController {
     private GameStatus _gameStatus;
     private Board _board;
-    private List<Player> _players = new();
+    private List<IPlayer> _players = new();
     private int _currentTurnIndex;
-    private Player _currentPlayer;
-    private Display _display;
+    private IPlayer _currentPlayer;
+    private IDisplay _display;
     private Action switchPlayer;
-
-    public GameController(Display display, string whiteName = "WhitePlayer", string blackName = "BlackPlayer") {
+    private int _fiftyMoveCounter = 0;
+    public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer) {
         _gameStatus = GameStatus.Running;
         _board = new();
-        _players.Add(new Player(whiteName, Colors.White));
-        _players.Add(new Player(blackName, Colors.Black));
+        _players.Add(whitePlayer);
+        _players.Add(blackPlayer);
         _currentTurnIndex = 0;
         _currentPlayer = _players[_currentTurnIndex];
         _display = display;
@@ -66,7 +66,7 @@ public class GameController {
         if (_gameStatus == GameStatus.Finished) {
             _display.DisplayBoard(_board, lastMoveOrigin);
 
-            Player opponent = _players[1-_currentTurnIndex];
+            IPlayer opponent = _players[1-_currentTurnIndex];
 
             if (_currentPlayer.Status == PlayerStatus.Checkmate) {
                 _display.DisplayMessage($"CHECKMATE! {opponent.Name} wins!");
@@ -84,7 +84,7 @@ public class GameController {
         
     }
 
-    private List<Movement> GetLegalMoves(Player player) {
+    private List<Movement> GetLegalMoves(IPlayer player) {
         List<Movement> legalMoves = [];
         foreach (var piece in _board.GetBoard()) {
             if (piece?.Color == player.Color) {
@@ -117,14 +117,19 @@ public class GameController {
     private bool Move(Movement movement) {
         if (!IsLegalMove(movement)) return false;
 
-        else if (_board.MovePiece(movement.From, movement.To, out Piece? killedPiece, out Pawn? promotedPawn)) {
+        else if (_board.MovePiece(movement.From, movement.To, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn)) {
             if (killedPiece is not null) {
                 Kill(killedPiece);
             }
             if (promotedPawn is not null) {
                 HandlePromotion(promotedPawn);
             }
-            return true;
+            bool result = true;
+            if (result && killedPiece is null && movingPiece is not Pawn) {
+                _fiftyMoveCounter++;
+            }
+            else _fiftyMoveCounter = 0;
+            return result;
         }
         
         else return false;
@@ -149,7 +154,7 @@ public class GameController {
     }
 
     private void UpdateGameStatus() {
-        Player opponent = _players[1 - _currentTurnIndex];
+        IPlayer opponent = _players[1 - _currentTurnIndex];
 
         if (!IsInCheck(_currentPlayer)) _currentPlayer.Status = PlayerStatus.Normal;
         if (!IsInCheck(opponent)) opponent.Status = PlayerStatus.Normal;
@@ -179,9 +184,16 @@ public class GameController {
             _gameStatus = GameStatus.Finished;
             return;
         }
+
+        if (_fiftyMoveCounter == 100) {
+            _currentPlayer.Status = PlayerStatus.Draw;
+            _players[1-_currentTurnIndex].Status = PlayerStatus.Draw;
+            _gameStatus = GameStatus.Finished;
+            return;
+        }
     }
 
-    private bool IsInCheck(Player player) {
+    private bool IsInCheck(IPlayer player) {
         King king = _board.FindKing(player.Color)!;
         bool result = _board.IsUnderAttack(king.CurrentPosition, king.Color);
         if (result) king.IsChecked = true;

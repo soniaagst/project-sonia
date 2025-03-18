@@ -1,4 +1,4 @@
-public class Player {
+public class Player : IPlayer {
     public string Name {get;}
     public Colors Color {get;}
     public PlayerStatus Status {get; set;}
@@ -21,4 +21,11 @@ public class Player {
         if (validMoves != null) return true;
         else return false;
     }
+}
+
+public interface IPlayer {
+    public string Name {get;}
+    public Colors Color {get;}
+    public PlayerStatus Status {get; set;}
+    public bool HasValidMove(Board board);
 }

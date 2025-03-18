@@ -86,7 +86,7 @@ public class Display : IDisplay {
 }
 
 public interface IDisplay {
-    public void DisplayBoard(Board board) {}
+    public void DisplayBoard(Board board, Position? lastMoveOrigin) {}
     public void DisplayMessage(string message) {}
     public PromoteOption AskPromotionChoice();
     public string AskNonNullInput(string? message);

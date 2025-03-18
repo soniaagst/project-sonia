@@ -43,8 +43,8 @@ public class Board {
         return position.Row >= 0 && position.Row <= 7 && position.Col >=0 && position.Col <= 7;
     }
 
-    public bool MovePiece(Position currentPosition, Position newPosition, out Piece? killedPiece, out Pawn? promotedPawn) {
-        Piece? movingPiece = GetPieceAt(currentPosition);
+    public bool MovePiece(Position currentPosition, Position newPosition, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn) {
+        movingPiece = GetPieceAt(currentPosition);
         killedPiece = GetPieceAt(newPosition);
         promotedPawn = null;
         if (movingPiece == null) return false;
