@@ -38,21 +38,25 @@ public class Display : IDisplay {
     public void DisplayHistory(List<HistoryUnit> movesHistory) {
         int num = 1;
         foreach (var item in movesHistory) {
-            string pieceChar = item.MovingPiece!.ToString()!;
+            string pieceChar = item.MovingPiece!.ToString();
             string dest = item.Destination.ToString();
             string kill = item.IsKill? "x" : "";
             string check = item.IsCheck? "+" : "";
             string promotion = item.IsPromotion? "=" : "";
+            string promotedTo = item.IsPromotion? item.PromotedPiece!.ToString() : "";
             string shortCastle = item.IsShortCastle? "O-O" : "";
             string longCastle = item.IsLongCastle? "O-O-O" : "";
+
             if (movesHistory.IndexOf(item)%2 == 0) {
                 Console.Write($"{num}. ");
-                if (item.IsShortCastle || item.IsLongCastle) {
-                    Console.Write($"{shortCastle}{longCastle}{check}");
-                }
-                Console.Write($"{pieceChar}{kill}{dest}{promotion}(promotetowhat){check}");
             }
-            else {
+                
+            if (item.IsShortCastle || item.IsLongCastle) {
+                Console.Write($"{shortCastle}{longCastle}{check} ");
+            }
+            Console.Write($"{pieceChar}{kill}{dest}{promotion}{promotedTo}{check} ");
+            
+            if (movesHistory.IndexOf(item)%2 == 1) {
                 Console.WriteLine();
                 num++;
             }
@@ -151,7 +155,7 @@ public struct Box {
             7 => 'h',
             _ => '?'
         };
-        return $"{colLetter},{8-Row}";
+        return $"{colLetter}{8-Row}";
     }
 }
 

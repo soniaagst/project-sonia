@@ -129,10 +129,12 @@ public class GameController {
         else if (_board.MovePiece(move.From, move.To, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn)) {
             bool result = true;
 
-            Piece promotedPiece = new Queen(Colors.White, move.To);
+            Piece? promotedPiece = null;
+
             if (killedPiece is not null) {
                 Kill(killedPiece);
             }
+
             if (promotedPawn is not null) {
                 PromoteOption choice = _display.AskPromotionChoice();
                 promotedPiece = CreatePromotedPiece(choice, promotedPawn.Color, promotedPawn.CurrentPosition);
