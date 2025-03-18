@@ -1,16 +1,16 @@
 
 public class Rook : Piece {
-    public Rook(Colors color, Position position) : base(color, position) {}
+    public Rook(Colors color, Box position) : base(color, position) {}
 
-    public override List<Position> GetValidMoves(Board board) {
-        List<Position> validMoves = new();
+    public override List<Box> GetValidMoves(Board board) {
+        List<Box> validMoves = new();
         int[][] directions = [ [-1,0], [1,0], [0,-1], [0,1] ];
 
         foreach (var dir in directions) {
-            Position destination = CurrentPosition;
+            Box destination = CurrentPosition;
             
             while (true) {
-                destination = new Position(destination.Row + dir[0], destination.Col + dir[1]);
+                destination = new Box(destination.Row + dir[0], destination.Col + dir[1]);
                 if (!Board.IsInsideBoard(destination)) break;
 
                 Piece? pieceAtDestination = board.GetPieceAt(destination);

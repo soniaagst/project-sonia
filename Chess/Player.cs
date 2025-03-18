@@ -1,20 +1,20 @@
 public class Player : IPlayer {
-    public string Name {get;}
+    public string PlayerName {get;}
     public Colors Color {get;}
     public PlayerStatus Status {get; set;}
 
     public Player(string name, Colors color) {
-        Name = name;
+        PlayerName = name;
         Color = color;
         Status = PlayerStatus.Normal;
     }
 
     public bool HasValidMove(Board board) {
-        List<Movement> validMoves = [];
+        List<Move> validMoves = [];
         foreach (var piece in board.GetBoard()) {
             if (piece?.Color == Color) {
                 foreach (var destination in piece.GetValidMoves(board)) {
-                    validMoves.Add(new Movement(piece.CurrentPosition, destination));
+                    validMoves.Add(new Move(piece.CurrentPosition, destination));
                 }
             }
         }
@@ -24,7 +24,7 @@ public class Player : IPlayer {
 }
 
 public interface IPlayer {
-    public string Name {get;}
+    public string PlayerName {get;}
     public Colors Color {get;}
     public PlayerStatus Status {get; set;}
     public bool HasValidMove(Board board);

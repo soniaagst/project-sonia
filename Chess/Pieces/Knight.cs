@@ -1,12 +1,12 @@
 public class Knight : Piece {
-    public Knight(Colors color, Position position) : base(color, position) { }
+    public Knight(Colors color, Box position) : base(color, position) { }
 
-    public override List<Position> GetValidMoves(Board board) {
-        List<Position> validMoves = new List<Position>();
+    public override List<Box> GetValidMoves(Board board) {
+        List<Box> validMoves = new List<Box>();
         List<List<int>> offsets = [[2,1], [2,-1], [-2,1], [-2,-1], [1,2], [1,-2], [-1,2], [-1,-2]];
 
         foreach (var offset in offsets) {
-            Position newPos = new Position(CurrentPosition.Row + offset[0], CurrentPosition.Col + offset[1]);
+            Box newPos = new Box(CurrentPosition.Row + offset[0], CurrentPosition.Col + offset[1]);
 
             if (Board.IsInsideBoard(newPos)) {
                 Piece? pieceAtNewPos = board.GetPieceAt(newPos);

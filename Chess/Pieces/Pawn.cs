@@ -1,29 +1,29 @@
 public class Pawn : Piece {
     public bool CanEnPassant {get; set;}
     public bool JustForwardTwo {get; set;}
-    public Pawn(Colors color, Position position) : base(color, position) {
+    public Pawn(Colors color, Box position) : base(color, position) {
         CanEnPassant = false;
         JustForwardTwo = false;
     }
 
-    public override List<Position> GetValidMoves(Board board) {
-        List<Position> validmoves = new();
+    public override List<Box> GetValidMoves(Board board) {
+        List<Box> validmoves = new();
         int direction = (Color == Colors.White) ? -1 : 1; // If pawn color is white, move up. If black, move down.
 
-        Position forwardOne = new Position(CurrentPosition.Row + direction, CurrentPosition.Col);
+        Box forwardOne = new Box(CurrentPosition.Row + direction, CurrentPosition.Col);
         if (Board.IsInsideBoard(forwardOne) && board.GetPieceAt(forwardOne) == null) {
             validmoves.Add(forwardOne);
 
-            Position forwardTwo = new Position(CurrentPosition.Row + (2 * direction), CurrentPosition.Col);
+            Box forwardTwo = new Box(CurrentPosition.Row + (2 * direction), CurrentPosition.Col);
             if (!IsMoved && Board.IsInsideBoard(forwardTwo) && board.GetPieceAt(forwardTwo) == null) {
                 validmoves.Add(forwardTwo);
             }
         }
 
         // Killing move
-        Position[] diagonals = {
-            new Position(CurrentPosition.Row + direction, CurrentPosition.Col - 1),
-            new Position(CurrentPosition.Row + direction, CurrentPosition.Col + 1)
+        Box[] diagonals = {
+            new Box(CurrentPosition.Row + direction, CurrentPosition.Col - 1),
+            new Box(CurrentPosition.Row + direction, CurrentPosition.Col + 1)
         };
         foreach (var diag in diagonals) {
             if (Board.IsInsideBoard(diag)) {
@@ -34,7 +34,7 @@ public class Pawn : Piece {
                 }
                 // En Passant
                 if (CanEnPassant && targetPiece == null) {
-                    Position behind = new Position(diag.Row - direction, diag.Col);
+                    Box behind = new Box(diag.Row - direction, diag.Col);
                     if (board.GetPieceAt(behind) is Pawn enemyPawn && enemyPawn.Color != Color && enemyPawn.JustForwardTwo) {
                         validmoves.Add(diag);
                     }
