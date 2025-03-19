@@ -1,8 +1,14 @@
+using Chess.Enums;
+
 namespace Chess.Models;
 public struct Position(int row, int col)
 {
     public int Row = row;
     public int Col = col;
+
+    public PieceColor GetBoxColor() {
+        return (PieceColor)((Row + Col)%2);
+    }
 
     public override readonly string ToString()
     {
@@ -21,3 +27,7 @@ public struct Position(int row, int col)
         return $"{colLetter}{8 - Row}";
     }
 }
+
+// this is a rename fromo Box.
+// since Box doesn't have info for occupying piece or is it occupied,
+// the name Position is more suitable

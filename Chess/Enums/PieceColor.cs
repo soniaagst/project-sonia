@@ -1,5 +1,5 @@
 namespace Chess.Enums;
-public enum Colors
+public enum PieceColor
 {
     White,
     Black

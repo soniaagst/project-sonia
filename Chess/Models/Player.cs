@@ -5,10 +5,10 @@ namespace Chess.Models;
 public class Player : IPlayer
 {
     public string PlayerName { get; }
-    public Colors Color { get; }
+    public PieceColor Color { get; }
     public PlayerStatus Status { get; set; }
 
-    public Player(string name, Colors color)
+    public Player(string name, PieceColor color)
     {
         PlayerName = name;
         Color = color;
@@ -32,3 +32,5 @@ public class Player : IPlayer
         else return false;
     }
 }
+
+// moved IsChecked() to the controller for easier reach

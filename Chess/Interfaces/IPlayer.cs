@@ -5,7 +5,7 @@ namespace Chess.Interfaces;
 public interface IPlayer
 {
     public string PlayerName { get; }
-    public Colors Color { get; }
+    public PieceColor Color { get; }
     public PlayerStatus Status { get; set; }
     public bool HasValidMove(Board board);
 }

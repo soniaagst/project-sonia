@@ -6,6 +6,7 @@ namespace Chess.Models;
 public class Display : IDisplay
 {
     public void DisplayBoard(Board board, Position? lastMoveOrigin)
+    // is a rename from DisplayMove, it shows the last move
     {
         Console.WriteLine("  A  B  C  D  E  F  G  H  ");
         for (int row = 0; row < 8; row++)
@@ -24,7 +25,7 @@ public class Display : IDisplay
                 else
                 {
                     Piece piece = board.GetBoard()[row, col]!;
-                    if (piece!.Color is Colors.White)
+                    if (piece!.Color is PieceColor.White)
                     {
                         if (piece is Pawn) Console.Write(" ♙ ");
                         if (piece is Knight) Console.Write(" ♘ ");

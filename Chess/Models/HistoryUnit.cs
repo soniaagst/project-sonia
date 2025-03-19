@@ -1,5 +1,6 @@
 namespace Chess.Models;
 public class HistoryUnit
+// is a rename from Move, since it's purpose is to build history
 {
     public Piece? Piece;
     public Position Destination;

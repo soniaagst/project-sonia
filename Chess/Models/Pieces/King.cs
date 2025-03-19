@@ -4,7 +4,7 @@ namespace Chess.Models.Pieces;
 public class King : Piece
 {
     public bool IsChecked { get; set; }
-    public King(Colors color, Position position) : base(color, position)
+    public King(PieceColor color, Position position) : base(color, position)
     {
         IsChecked = false;
     }

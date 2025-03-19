@@ -3,12 +3,12 @@ using Chess.Enums;
 namespace Chess.Models;
 public abstract class Piece
 {
-    public Colors Color { get; private set; }
-    public bool IsKilled { get; set; }
-    public bool IsMoved { get; set; }
+    public PieceColor Color { get; private set; }
+    public bool IsKilled { get; set; } // is rename for Killed property
+    public bool IsMoved { get; set; } // needed for pawn, king, and rook movement rules
     public Position CurrentPosition { get; set; }
 
-    public Piece(Colors color, Position position)
+    public Piece(PieceColor color, Position position)
     {
         Color = color;
         IsKilled = false;
@@ -16,8 +16,12 @@ public abstract class Piece
     }
 
     public abstract List<Position> GetValidMoves(Board board);
+    // is a rename of CanMove(),
+    // because the original purpose of CanMove 
+    // is to set rules of valid moves for each piece
 
     public override string ToString()
+    // this is for history notation purpose
     {
         string pieceChar = GetType().ToString() switch
         {

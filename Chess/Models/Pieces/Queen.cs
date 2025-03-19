@@ -3,7 +3,7 @@ using Chess.Enums;
 namespace Chess.Models.Pieces;
 public class Queen : Piece
 {
-    public Queen(Colors color, Position position) : base(color, position) { }
+    public Queen(PieceColor color, Position position) : base(color, position) { }
 
     public override List<Position> GetValidMoves(Board board)
     {

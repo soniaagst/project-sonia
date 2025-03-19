@@ -13,7 +13,7 @@ public class GameController
     private int _currentTurnIndex;
     private IPlayer _currentTurn;
     public event Action? OnTurnChanged;
-    private List<HistoryUnit> _moveHistory = [];
+    private List<HistoryUnit> _moveHistory = []; // is rename of MovesPlayer.
 
     public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer)
     {
@@ -111,6 +111,9 @@ public class GameController
     }
 
     private List<Movement> GetLegalMoves(IPlayer player)
+    // is needed for filtering valid moves into 
+    // legal moves (moves that won't make king in danger)
+    // this is basic and can't be omitted
     {
         List<Movement> legalMoves = [];
         foreach (var piece in _board.GetBoard())
@@ -137,6 +140,9 @@ public class GameController
     }
 
     private bool IsLegalMove(Movement move)
+    // is a rename for ValidateMove()
+    // IsLegalMove() is more appropriate because
+    // valid move doesn't necessarily legal
     {
         Piece? piece = _board.GetPieceAt(move.From);
         if (piece is not null && piece.Color == _currentTurn.Color)
@@ -148,6 +154,8 @@ public class GameController
     }
 
     private bool MakeMove(Movement move)
+    // MakeMove() and PlayerMove() doesn't seem to have different purpose, so
+    // MakeMove() alone is enough
     {
         if (!IsLegalMove(move)) return false;
 
@@ -168,6 +176,8 @@ public class GameController
 
         Piece? promotedPiece = null;
         if (promotedPawn is not null)
+        // checking and executing promotion handled here, 
+        // CheckPromotion() would only make things complicated
         {
             PromoteOption choice = _display.AskPromotionChoice();
 
@@ -213,6 +223,7 @@ public class GameController
     }
 
     private void UpdateGameStatus()
+    // is a rename for SetPlayerGameStatus().
     {
         IPlayer opponent = _players[1 - _currentTurnIndex];
 
@@ -246,10 +257,59 @@ public class GameController
     }
 
     private bool IsInCheck(IPlayer player)
+    // moved from Player
     {
         King king = _board.FindKing(player.Color)!;
         bool result = _board.IsUnderAttack(king.CurrentPosition, king.Color);
         if (result) king.IsChecked = true;
         return result;
     }
+
+    private bool IsInsufficientMaterial() {
+        List<Piece> remainingPieces = _board.GetPieces();
+
+        // king vs king
+        if (remainingPieces.All(p => p is King)) return true;
+
+        // kn vs k OR kb vs k
+        if (remainingPieces.Count == 3 && remainingPieces.Any(p => p is Knight or Bishop) && remainingPieces.Any(p => p is King))
+            return true;
+
+        if (remainingPieces.Count == 4) {
+            // kb vs kb (same color)
+            if (remainingPieces.Count(p => p is Bishop) == 2) {
+                List<Piece> bishops = remainingPieces.Where(p => p is Bishop).ToList();
+                if (bishops[0].Color != bishops[1].Color) {
+                    if (bishops[0].CurrentPosition.GetBoxColor() == bishops[1].CurrentPosition.GetBoxColor())
+                        return true;
+                }
+            }
+
+            // kn vs kn
+            if (remainingPieces.Count(piece => piece is Knight) == 2) {
+                List<Piece> knights = remainingPieces.Where(piece => piece is Knight).ToList();
+                if (knights[0].Color != knights[1].Color) {
+                    return true;
+                }
+            }
+
+            // kb vs kn
+            if (remainingPieces.Any(piece => piece is Knight) && remainingPieces.Any(piece => piece is Bishop)) {
+                Piece knight = remainingPieces.Find(p => p is Knight)!;
+                Piece bishop = remainingPieces.Find(p => p is Bishop)!;
+                if (knight.Color != bishop.Color)
+                    return true;
+            }
+        }
+
+        return false;
+    }
 }
+
+// Board handles the actual execution of movement, and
+// en passant is just another movement, it should be handled by the Board, 
+// so CheckEnPassant() would be misplaced if put here
+
+// IsOver() has the same outcome as this method, 
+// and actually just returns if the game status is finished,
+// which is already in Play() and already self explanatory there.

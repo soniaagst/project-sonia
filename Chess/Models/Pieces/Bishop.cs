@@ -3,7 +3,7 @@ using Chess.Enums;
 namespace Chess.Models.Pieces;
 public class Bishop : Piece
 {
-    public Bishop(Colors color, Position position) : base(color, position) { }
+    public Bishop(PieceColor color, Position position) : base(color, position) { }
 
     public override List<Position> GetValidMoves(Board board)
     {
