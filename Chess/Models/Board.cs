@@ -4,10 +4,10 @@ using Chess.Enums;
 namespace Chess.Models;
 public class Board
 {
-    private Piece?[,] _grid;
+    private Piece?[,] _grid = new Piece?[8, 8];
     private Position _nowhere = new(99, 99);
 
-    public Board()
+    public void InitializeBoard()
     {
         _grid = new Piece?[8, 8];
 

@@ -12,40 +12,47 @@ public class GameController
     private List<IPlayer> _players = [];
     private int _currentTurnIndex;
     private IPlayer _currentTurn;
-    public event Action? OnTurnChanged;
+    public event Action<IPlayer>? OnTurnSwitched; // is a rename of OnMovesPlayedHistory, it shows history
     private List<HistoryUnit> _moveHistory = []; // is rename of MovesPlayer.
 
-    public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer)
+    public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer, Action<Board>? initializeBoard = null)
     {
         _display = display;
+
         _board = new();
+        initializeBoard?.Invoke(_board); // custom initial board
+        if (initializeBoard is null) _board.InitializeBoard();
+
         _players.Add(whitePlayer);
         _players.Add(blackPlayer);
+
         _currentTurnIndex = 0;
         _currentTurn = _players[_currentTurnIndex];
+        
         _gameStatus = GameStatus.Running;
-
-        OnTurnChanged += () => {
-
-        };
     }
 
     public void Play()
     {
         Position? lastMoveOrigin = null;
 
-        while (_gameStatus == GameStatus.Running)
-        {
+        OnTurnSwitched += _currentTurn => {
             _display.DisplayBoard(_board, lastMoveOrigin);
             _display.DisplayHistory(_moveHistory);
             _display.DisplayMessage("\nEnter 'exit' to quit the game. Enter 'draw' to end the game in a tie.");
+            _display.DisplayMessage($"{_currentTurn.PlayerName}'s ({_currentTurn.Color}) turn.");
+        };
 
+        OnTurnSwitched?.Invoke(_currentTurn);
+
+        while (_gameStatus == GameStatus.Running)
+        {
             if (_currentTurn.Status == PlayerStatus.Checked)
             {
                 _display.DisplayMessage("You're in CHECK! Save your King.");
             }
 
-            string input = _display.AskNonNullInput($"{_currentTurn.PlayerName}'s ({_currentTurn.Color}) turn, enter your move (ex.: b1 c3) ");
+            string input = _display.AskNonNullInput("Enter your move (ex.: b1 c3) ");
 
             if (input == "EXIT")
             {
@@ -58,7 +65,7 @@ public class GameController
 
             if (input == "DRAW")
             {
-                _display.DisplayMessage("Player agreed to draw.");
+                _display.DisplayMessage("Players agreed to draw.");
                 _currentTurn.Status = PlayerStatus.Draw;
                 _players[1 - _currentTurnIndex].Status = PlayerStatus.Draw;
                 _gameStatus = GameStatus.Finished;
@@ -196,13 +203,15 @@ public class GameController
         _moveHistory.Add(new HistoryUnit
         {
             Piece = movingPiece,
-            Destination = move.To,
+            StartingPosition = move.From,
+            EndingPosition = move.To,
             IsKill = killedPiece != null,
             IsCheck = IsInCheck(_players[1 - _currentTurnIndex]),
             IsShortCastle = movingPiece is King && move.To.Col - move.From.Col == 2,
             IsLongCastle = movingPiece is King && move.To.Col - move.From.Col == -2,
             IsPromotion = promotedPawn != null,
-            PromotedPiece = promotedPiece
+            PromotedPiece = promotedPiece,
+            KilledPiece = killedPiece
         });
         TrimMoveHistory();
     }
@@ -219,7 +228,7 @@ public class GameController
     {
         _currentTurnIndex = 1 - _currentTurnIndex;
         _currentTurn = _players[_currentTurnIndex];
-        OnTurnChanged?.Invoke();
+        OnTurnSwitched?.Invoke(_currentTurn);
     }
 
     private void UpdateGameStatus()
@@ -253,7 +262,12 @@ public class GameController
             return;
         }
 
-
+        if (IsInsufficientMaterial()) {
+            opponent.Status = PlayerStatus.Draw;
+            _currentTurn.Status = PlayerStatus.Draw;
+            _gameStatus = GameStatus.Finished;
+            return;
+        }
     }
 
     private bool IsInCheck(IPlayer player)
