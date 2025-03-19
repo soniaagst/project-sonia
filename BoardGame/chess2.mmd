@@ -7,8 +7,6 @@ classDiagram
         - IPlayer _currentTurn
         - Display _display
         + event Action~IPlayer~? OnTurnChanged
-        - int _fiftyMoveCounter = 0
-        - Dictionary~string, int~ _boardHistory
         - List~Move~ _moveHistory
         + GameController(Display display, string whiteName, string blackName)
         + void Play()
@@ -16,13 +14,10 @@ classDiagram
         - List~Movement~ GetLegalMove(IPlayer)
         - bool ValidateMove(Movement)
         - bool MakeMove(Movement)
-        - void PlayerMove(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move)
+        - void HandleMoveDone(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move)
         - Piece Promote(Pawn promotedPawn)
-        - void SaveBoardState()
         - void SetPlayerGameStatus()
         - bool IsChecked(IPlayer player)
-        - bool IsInsufficientMaterial()
-        - bool IsThreeRepetition()
     }
 
     class Display {
@@ -48,7 +43,6 @@ classDiagram
         + King? FindKing(Colors color)
         + void SimulateMove(Box from, Box to)
         + void UndoSimulation(Box origin, Box simulatedmove, Piece? killedPiece)
-        + string GenerateBoardState()
     }
 
     class Piece {
@@ -120,7 +114,6 @@ classDiagram
         + int Y
         + int X
         + Box(int y, int x)
-        + Colors GetBoxColor()
         + override string ToString()
     }
 
@@ -181,6 +174,7 @@ classDiagram
     Player --|> IPlayer
     Display --|> IDisplay
     
+    Move -- GameController
     Movement -- GameController
     IDisplay -- GameController
     PromoteOption -- GameController

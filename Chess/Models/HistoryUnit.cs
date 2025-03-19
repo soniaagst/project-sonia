@@ -1,15 +1,8 @@
-public struct Movement {
-    public  Box From {get;}
-    public Box To {get;}
-    public Movement(Box from, Box to) {
-        From = from;
-        To = to;
-    }
-}
-
-public class Move {
+namespace Chess.Models;
+public class HistoryUnit
+{
     public Piece? Piece;
-    public Box Destination;
+    public Position Destination;
     public bool IsKill = false;
     public bool IsCheck = false;
     public bool IsShortCastle = false;
