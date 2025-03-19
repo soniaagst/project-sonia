@@ -36,3 +36,6 @@ public abstract class Piece
         return pieceChar;
     }
 }
+
+// the usage of abstract class instead of concrete class that inherits an interface here is because
+// that is 1 step too much, and interface can't implement method.

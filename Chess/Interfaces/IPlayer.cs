@@ -9,3 +9,5 @@ public interface IPlayer
     public PlayerStatus Status { get; set; }
     public bool HasValidMove(Board board);
 }
+
+// moved IsChecked() to the controller

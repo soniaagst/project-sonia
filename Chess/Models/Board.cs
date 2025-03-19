@@ -37,6 +37,7 @@ public class Board
     }
 
     public Piece?[,] GetBoard()
+    // absolutely needed in the controller for operations related to position
     {
         return _grid;
     }

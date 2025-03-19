@@ -11,6 +11,7 @@ public struct Position(int row, int col)
     }
 
     public override readonly string ToString()
+    // for history notation purpose
     {
         char colLetter = Col switch
         {
@@ -28,6 +29,8 @@ public struct Position(int row, int col)
     }
 }
 
-// this is a rename fromo Box.
+// this is a rename from class Box.
 // since Box doesn't have info for occupying piece or is it occupied,
 // the name Position is more suitable
+
+// And X and Y is more readable if it's Col and Row.

@@ -11,3 +11,5 @@ public interface IDisplay
     public string AskNonNullInput(string? message);
     public bool TryParseMove(string input, out Movement? movement);
 }
+
+// the class that needs interface the most is Display, hence IDisplay.

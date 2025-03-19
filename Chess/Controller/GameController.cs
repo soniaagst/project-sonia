@@ -313,3 +313,13 @@ public class GameController
 // IsOver() has the same outcome as this method, 
 // and actually just returns if the game status is finished,
 // which is already in Play() and already self explanatory there.
+
+// PlayerPieceDictionary is pointless, unless we implement "draw by insufficient material" rule.
+// even if so, it's still redundant since there's Board.GetPieces(), which returns list of remaining pieces on board,
+// because we need to call GatPieces() twice and filter based on color twice just to fill the dictionary, and
+// further filter again just to see what kind of pieces left onn board.
+// And Board.GetPieces() is useless, unless draw by insufficient material is implemented.
+// conclusion: adding draw by insufficient material is not violating the class diagram, it's just hidden or implicit.
+// conclusion2: PlayerPieceDictionary is still useless anyway.
+
+// IPiece PieceKilled is just doesn't make any sense here. i omitted.
