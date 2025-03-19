@@ -74,7 +74,7 @@ public class GameController {
                 _display.DisplayMessage("Invalid input or move. Try again.");
                 continue;
             }
-            if (PlayerMove(movement!.Value) == true) {
+            if (MakeMove(movement!.Value) == true) {
                 lastMoveOrigin = movement!.Value.From;
                 SaveBoardState();
                 SetPlayerGameStatus();
@@ -138,17 +138,17 @@ public class GameController {
         return false;
     }
 
-    private bool PlayerMove(Movement move) {
+    private bool MakeMove(Movement move) {
         if (!ValidateMove(move)) return false;
 
         Action<Piece?, Piece?, Pawn?> onMoveMade = (movingPiece, killedPiece, promotedPawn) => {
-            MakeMove(movingPiece!, killedPiece, promotedPawn, move);
+            PlayerMove(movingPiece!, killedPiece, promotedPawn, move);
         };
 
         return _board.MovePiece(move.From, move.To, onMoveMade);
     }
 
-    private void MakeMove(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move) {
+    private void PlayerMove(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move) {
         if (killedPiece is not null) {
             _board.KillPiece(killedPiece);
         }

@@ -2,26 +2,32 @@ classDiagram
     class GameController {
         - GameStatus _gameStatus
         - Board _board
-        - List~Player~ _players
+        - List~IPlayer~ _players
         - int _currentTurnIndex
-        - Player _currentPlayer
+        - IPlayer _currentTurn
         - Display _display
-        - Action switchPlayer
+        + event Action~IPlayer~? OnTurnChanged
+        - int _fiftyMoveCounter = 0
+        - Dictionary~string, int~ _boardHistory
+        - List~Move~ _moveHistory
         + GameController(Display display, string whiteName, string blackName)
         + void Play()
-        - void Move(Movement)
-        - void Kill(Piece targetPiece)
-        - void HandlePromotion(Pawn pawn)
-        - Piece CreatePromotedPiece(PromoteOption choice, Colors color, Position position)
-        - void UpdateGameStatus()
-        - bool IsInCheck(Player player)
+        - void SwitchTurn()
+        - List~Movement~ GetLegalMove(IPlayer)
+        - bool ValidateMove(Movement)
+        - bool MakeMove(Movement)
+        - void PlayerMove(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move)
+        - Piece Promote(Pawn promotedPawn)
+        - void SaveBoardState()
+        - void SetPlayerGameStatus()
+        - bool IsChecked(IPlayer player)
         - bool IsInsufficientMaterial()
-        - bool IsLegalMove(Movement)
-        - List~Movement~ GetLegalMove(Player)
+        - bool IsThreeRepetition()
     }
 
     class Display {
-        + void DisplayBoard(Board board, Position? lastMoveOrigin)
+        + void DisplayBoard(Board board, Box? lastMoveOrigin)
+        + void DisplayHistory(List~Move~ moveHistory)
         + void DisplayMessage(string message)
         + string AskNonNullInput(string message)
         + bool TryParseInput(string input, out Movement? movement)
@@ -29,21 +35,20 @@ classDiagram
     }
 
     class Board {
-        - Piece?[,] _grid
+        - Piece?[,] _boxes
         + Board()
-        - void InitializeBoard()
         + Piece?[,] GetBoard()
-        + Piece? GetPieceAt(Position position)
-        + static bool IsInsideBoard(Position position)
-        + bool MovePiece(Position currentPos, Position newPos, out Piece? killedPiece, out Pawn? promotedPawn)
+        + List~Piece~ GetPieces()
+        + Piece? GetPieceAt(Box position)
+        + static bool IsInsideBoard(Box position)
+        + bool MovePiece(Box from, Box to, Action onMoveMade)
         + void KillPiece(Piece targetPiece)
-        + void ReplacePiece(Pawn pawn, Piece promotedPiece)
-        + bool IsUnderAttack(Position position, Colors color)
-        + bool IsFriendlyPieceAt(Position position, Colors color)
+        + bool IsUnderAttack(Box position, Colors color)
+        + bool IsFriendlyPieceAt(Box position, Colors color)
         + King? FindKing(Colors color)
-        + void HandleCastling(King king)
-        + void SimulateMove(Position from, Position to)
-        + void UndoSimulation(Position origin, Position simulatedmove, Piece? killedPiece)
+        + void SimulateMove(Box from, Box to)
+        + void UndoSimulation(Box origin, Box simulatedmove, Piece? killedPiece)
+        + string GenerateBoardState()
     }
 
     class Piece {
@@ -51,9 +56,10 @@ classDiagram
         + Colors Color
         + bool IsKilled
         + bool IsMoved
-        + Position CurrentPosition
-        + Piece(Colors color, Position position)
+        + Box CurrentPosition
+        + Piece(Colors color, Box position)
         + abstract List<Position> GetValidMoves(Board board)
+        + override string ToString()
     }
 
     class Pawn {
@@ -85,7 +91,7 @@ classDiagram
     }
 
     class Player {
-        + string Name
+        + string PlayerName
         + Colors Color
         + PlayerStatus Status
         + Player(string name, Colors color)
@@ -94,16 +100,28 @@ classDiagram
 
     class Movement {
         <<struct>>
-        + position From
-        + position To
+        + Box From
+        + Box To
     }
 
-    class Position {
+    class Move {
+        + Piece? Piece
+        + Box Destination
+        + bool IsKill
+        + bool IsCheck
+        + bool IsShortCastle
+        + bool IsLongCastle
+        + bool IsPromotion
+        + Piece? PromotedPiece
+    }
+
+    class Box {
         <<struct>>
-        + int Row
-        + int Col
-        + Position(int row, int col)
-        + Colors GetSquareColor()
+        + int Y
+        + int X
+        + Box(int y, int x)
+        + Colors GetBoxColor()
+        + override string ToString()
     }
 
     class GameStatus {
@@ -168,5 +186,5 @@ classDiagram
     PromoteOption -- GameController
     GameStatus -- GameController
     PlayerStatus -- Player
-    Position --Piece
+    Box --Piece
     Colors -- Piece

@@ -1,4 +1,3 @@
-
 public class King : Piece {
     public bool IsChecked {get; set;}
     public King(Colors color, Box position) : base(color, position) {
