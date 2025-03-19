@@ -25,12 +25,12 @@ public abstract class Piece
     {
         string pieceChar = GetType().ToString() switch
         {
-            "Pawn" => "P",
-            "Knight" => "N",
-            "Bishop" => "B",
-            "Rook" => "R",
-            "Queen" => "Q",
-            "King" => "K",
+            "Chess.Models.Pieces.Pawn" => "P",
+            "Chess.Models.Pieces.Knight" => "N",
+            "Chess.Models.Pieces.Bishop" => "B",
+            "Chess.Models.Pieces.Rook" => "R",
+            "Chess.Models.Pieces.Queen" => "Q",
+            "Chess.Models.Pieces.King" => "K",
             _ => "?"
         };
         return pieceChar;

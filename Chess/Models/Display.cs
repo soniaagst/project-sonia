@@ -55,7 +55,7 @@ public class Display : IDisplay
         foreach (var item in movesHistory)
         {
             string pieceChar = item.Piece!.ToString();
-            string dest = item.Destination.ToString();
+            string dest = item.EndingPosition.ToString();
             string kill = item.IsKill ? "x" : "";
             string check = item.IsCheck ? "+" : "";
             string promotion = item.IsPromotion ? "=" : "";
@@ -115,7 +115,7 @@ public class Display : IDisplay
             movement = null;
             return false;
         }
-        Position[] move = [new(), new()]; // [from, to]
+        Position[] move = [new(), new()];
         string[] pos = input.Split(' ');
         for (int i = 0; i < 2; i++)
         {
