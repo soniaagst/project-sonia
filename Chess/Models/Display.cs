@@ -8,19 +8,27 @@ public class Display : IDisplay
     public void DisplayBoard(Board board, Position? lastMoveOrigin)
     // is a rename from DisplayMove, it shows the last move
     {
+        Console.Clear();
+        Console.BackgroundColor = ConsoleColor.Red;
         Console.WriteLine("  A  B  C  D  E  F  G  H  ");
+        Console.ResetColor();
         for (int row = 0; row < 8; row++)
         {
             Console.Write(8 - row);
             for (int col = 0; col < 8; col++)
             {
+                if ((row + col)%2 == 0) Console.BackgroundColor = ConsoleColor.DarkGreen;
+                else Console.BackgroundColor = ConsoleColor.Yellow;
+
                 if (lastMoveOrigin?.Row == row && lastMoveOrigin?.Col == col)
                 {
-                    Console.Write(" ＊");
+                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.Write("   ");
+                    Console.ResetColor();
                 }
                 else if (board.GetBoard()[row, col] == null)
                 {
-                    Console.Write(" ・");
+                    Console.Write("   ");
                 }
                 else
                 {
@@ -44,6 +52,7 @@ public class Display : IDisplay
                         if (piece is King) Console.Write(" ♚ ");
                     }
                 }
+                Console.ResetColor();
             }
             Console.WriteLine($" {8 - row}");
         }
