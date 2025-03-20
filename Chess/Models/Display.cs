@@ -32,6 +32,7 @@ public class Display : IDisplay
                     Piece piece = board.GetBoard()[row, col]!;
                     if (piece!.Color is PieceColor.White)
                     {
+                        Console.ForegroundColor = ConsoleColor.Black;
                         if (piece is Pawn) Console.Write(" ♙ ");
                         if (piece is Knight) Console.Write(" ♘ ");
                         if (piece is Bishop) Console.Write(" ♗ ");
@@ -41,6 +42,7 @@ public class Display : IDisplay
                     }
                     else
                     {
+                        Console.ForegroundColor = ConsoleColor.Black;
                         if (piece is Pawn) Console.Write(" ♟ ");
                         if (piece is Knight) Console.Write(" ♞ ");
                         if (piece is Bishop) Console.Write(" ♝ ");
