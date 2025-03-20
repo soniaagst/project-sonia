@@ -1,14 +1,18 @@
-﻿Console.WriteLine("Start of foobar");
-FooBar.RunVer3(88);
+﻿FooBar fooBar = new();
 
-Console.WriteLine("\n\nStart of foobarjazz");
-List<object> foobarjazz = FooBar.Foobarjazz2(105).ToList();
-foreach (object item in foobarjazz) {
-    Console.Write(item);
-    if (foobarjazz.IndexOf(item) < foobarjazz.Count - 1) {
-        Console.Write(", ");
-    }
+Console.WriteLine("BEFORE CHANGES");
+foreach (var item in fooBar.ShowRules()) {
+    Console.WriteLine(item);
 }
 
-Console.WriteLine("\n\nStart of foobazbarjazzhuzz");
-FooBar.Bazhuzz(1260);
+fooBar.AddRule(2, "hey");
+fooBar.RemoveRule(4);
+fooBar.EditRule(3, "jude");
+
+Console.WriteLine("AFTER CHANGES");
+foreach (var item in fooBar.ShowRules()) {
+    Console.WriteLine(item);
+}
+
+Console.WriteLine("RUN");
+fooBar.Run();
