@@ -9,22 +9,19 @@ public class Display : IDisplay
     // is a rename from DisplayMove, it shows the last move
     {
         Console.Clear();
-        Console.BackgroundColor = ConsoleColor.Red;
-        Console.WriteLine("  A  B  C  D  E  F  G  H  ");
-        Console.ResetColor();
+        Console.WriteLine("   A  B  C  D  E  F  G  H   ");
         for (int row = 0; row < 8; row++)
         {
-            Console.Write(8 - row);
+            Console.Write($"{8 - row} ");
             for (int col = 0; col < 8; col++)
             {
-                if ((row + col)%2 == 0) Console.BackgroundColor = ConsoleColor.DarkGreen;
-                else Console.BackgroundColor = ConsoleColor.Yellow;
+                if ((row + col)%2 == 0) Console.BackgroundColor = ConsoleColor.Yellow;
+                else Console.BackgroundColor = ConsoleColor.Cyan;
 
                 if (lastMoveOrigin?.Row == row && lastMoveOrigin?.Col == col)
                 {
-                    Console.BackgroundColor = ConsoleColor.DarkBlue;
+                    Console.BackgroundColor = ConsoleColor.DarkGreen;
                     Console.Write("   ");
-                    Console.ResetColor();
                 }
                 else if (board.GetBoard()[row, col] == null)
                 {
@@ -56,7 +53,7 @@ public class Display : IDisplay
             }
             Console.WriteLine($" {8 - row}");
         }
-        Console.WriteLine("  A  B  C  D  E  F  G  H  ");
+        Console.WriteLine("   A  B  C  D  E  F  G  H   ");
     }
 
     public void DisplayHistory(List<HistoryUnit> movesHistory)
@@ -142,4 +139,21 @@ public class Display : IDisplay
         movement = new Movement(move[0], move[1]);
         return true;
     }
+
+    public void DisplayStartingScreen(out string whiteName, out string blackName) {
+        Console.Clear();
+        Console.WriteLine("=====================================");
+        Console.WriteLine("        WELCOME TO CHESS GAME        ");
+        Console.WriteLine("=====================================");
+        Console.WriteLine(" Controls: ");
+        Console.WriteLine(" - Enter moves like 'e2 e4' ");
+        Console.WriteLine(" - Enter 'exit' to quit ");
+        Console.WriteLine(" - Enter 'draw' to offer a draw ");
+        Console.WriteLine("\nPress any key to start...");
+        Console.ReadKey();
+        Console.Clear();
+        whiteName = AskNonNullInput("Enter White player name: ");
+        blackName = AskNonNullInput("Enter Black player name: ");
+    }
+
 }

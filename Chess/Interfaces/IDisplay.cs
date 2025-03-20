@@ -10,6 +10,7 @@ public interface IDisplay
     public PromoteOption AskPromotionChoice();
     public string AskNonNullInput(string? message);
     public bool TryParseMove(string input, out Movement? movement);
+    void DisplayStartingScreen(out string whiteName, out string blackName);
 }
 
 // the class that needs interface the most is Display, hence IDisplay.

@@ -1,14 +1,9 @@
 ﻿using Chess.Controller;
 using Chess.Models;
-using Chess.Enums;
 
 Display display = new();
 
-string whiteName = display.AskNonNullInput("Enter White player name: ");
-string blackName = display.AskNonNullInput("Enter Black player name: ");
+display.DisplayStartingScreen(out string whiteName, out string blackName);
 
-Player whitePlayer = new(whiteName, PieceColor.White);
-Player blackPlayer = new(blackName, PieceColor.Black);
-
-GameController game = new(display, whitePlayer, blackPlayer);
+GameController game = new(display, whiteName, blackName);
 game.Play();

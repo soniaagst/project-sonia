@@ -16,13 +16,16 @@ public class GameController
     public event Action<Position?>? OnGameUpdated; // is a rename of OnMovesPlayedHistory, it shows history
     private List<HistoryUnit> _moveHistory = []; // is rename of MovesPlayer. it lists moves details.
 
-    public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer, Action<Board>? initializeBoard = null)
+    public GameController(IDisplay display, string whiteName, string blackName, Action<Board>? initializeBoard = null)
     {
         _display = display;
 
         _board = new();
         initializeBoard?.Invoke(_board); // custom initial board
         if (initializeBoard is null) _board.InitializeBoard();
+
+        Player whitePlayer = new(whiteName, PieceColor.White);
+        Player blackPlayer = new(blackName, PieceColor.Black);
 
         _players.Add(whitePlayer);
         _players.Add(blackPlayer);
@@ -42,13 +45,12 @@ public class GameController
         };
 
         OnTurnSwitched += player => {
-            _display.DisplayMessage("\nEnter 'exit' to quit the game. Enter 'draw' to end the game in a tie.");
-            _display.DisplayMessage($"{player.PlayerName}'s ({player.Color}) turn.");
+            _display.DisplayMessage($"\n{player.PlayerName}'s ({player.Color}) turn.");
         };
     }
     
     public void Play()
-    {
+    { 
         Position? lastMoveOrigin = null;
 
         OnGameUpdated?.Invoke(lastMoveOrigin);
@@ -74,11 +76,18 @@ public class GameController
 
             if (input == "DRAW")
             {
-                _display.DisplayMessage("Players agreed to draw.");
-                _currentTurn.Status = PlayerStatus.Draw;
-                _players[1 - _currentTurnIndex].Status = PlayerStatus.Draw;
-                _gameStatus = GameStatus.Finished;
-                break;
+                SwitchTurn();
+                _display.DisplayMessage($"\n{_players[1-_currentTurnIndex].PlayerName} offered a draw.");
+                if (_display.AskNonNullInput("Accept? (y/n) ") == "Y") {
+                    _display.DisplayMessage("\nPlayers agreed to draw.");
+                    _currentTurn.Status = PlayerStatus.Draw;
+                    _players[1 - _currentTurnIndex].Status = PlayerStatus.Draw;
+                    _gameStatus = GameStatus.Finished;
+                    break;
+                }
+                SwitchTurn();
+                _display.DisplayMessage($"\n{_players[1-_currentTurnIndex].PlayerName} disagree to draw. Continue the game.");
+                continue;
             }
 
             if (!_display.TryParseMove(input, out Movement? movement))
@@ -117,7 +126,7 @@ public class GameController
             {
                 if (_currentTurn.Status == PlayerStatus.Resigned)
                 {
-                    _display.DisplayMessage($"{_currentTurn.PlayerName} has resigned. {opponent.PlayerName} wins!");
+                    _display.DisplayMessage($"\n{_currentTurn.PlayerName} has resigned. {opponent.PlayerName} wins!");
                 }
                 else if (_currentTurn.Status == PlayerStatus.Stalemate)
                 {
