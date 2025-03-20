@@ -66,11 +66,11 @@ public class Board
         return position.Row >= 0 && position.Row <= 7 && position.Col >= 0 && position.Col <= 7;
     }
 
-    public bool MovePiece(Position from, Position to, Action<Piece?, Piece?, Pawn?> onMoveMade)
+    public bool MovePiece(Position from, Position to, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn)
     {
-        Piece? movingPiece = GetPieceAt(from);
-        Piece? killedPiece = GetPieceAt(to);
-        Pawn? promotedPawn = null;
+        movingPiece = GetPieceAt(from);
+        killedPiece = GetPieceAt(to);
+        promotedPawn = null;
 
         if (movingPiece == null) return false;
 
@@ -140,7 +140,6 @@ public class Board
         _grid[from.Row, from.Col] = null;
         movingPiece.CurrentPosition = to;
         movingPiece.IsMoved = true;
-        onMoveMade?.Invoke(movingPiece, killedPiece, promotedPawn);
 
         return true;
     }

@@ -12,8 +12,9 @@ public class GameController
     private List<IPlayer> _players = [];
     private int _currentTurnIndex;
     private IPlayer _currentTurn;
-    public event Action<IPlayer>? OnTurnSwitched; // is a rename of OnMovesPlayedHistory, it shows history
-    private List<HistoryUnit> _moveHistory = []; // is rename of MovesPlayer.
+    public event Action<IPlayer>? OnTurnSwitched;
+    public event Action<Position?>? OnGameUpdated; // is a rename of OnMovesPlayedHistory, it shows history
+    private List<HistoryUnit> _moveHistory = []; // is rename of MovesPlayer. it lists moves details.
 
     public GameController(IDisplay display, IPlayer whitePlayer, IPlayer blackPlayer, Action<Board>? initializeBoard = null)
     {
@@ -30,19 +31,27 @@ public class GameController
         _currentTurn = _players[_currentTurnIndex];
         
         _gameStatus = GameStatus.Running;
+
+        SubscribeEvents();
     }
 
+    private void SubscribeEvents() {
+        OnGameUpdated += lastMove => {
+            _display.DisplayBoard(_board, lastMove);
+            _display.DisplayHistory(_moveHistory);
+        };
+
+        OnTurnSwitched += player => {
+            _display.DisplayMessage("\nEnter 'exit' to quit the game. Enter 'draw' to end the game in a tie.");
+            _display.DisplayMessage($"{player.PlayerName}'s ({player.Color}) turn.");
+        };
+    }
+    
     public void Play()
     {
         Position? lastMoveOrigin = null;
 
-        OnTurnSwitched += _currentTurn => {
-            _display.DisplayBoard(_board, lastMoveOrigin);
-            _display.DisplayHistory(_moveHistory);
-            _display.DisplayMessage("\nEnter 'exit' to quit the game. Enter 'draw' to end the game in a tie.");
-            _display.DisplayMessage($"{_currentTurn.PlayerName}'s ({_currentTurn.Color}) turn.");
-        };
-
+        OnGameUpdated?.Invoke(lastMoveOrigin);
         OnTurnSwitched?.Invoke(_currentTurn);
 
         while (_gameStatus == GameStatus.Running)
@@ -80,7 +89,13 @@ public class GameController
             if (MakeMove(movement!.Value) == true)
             {
                 lastMoveOrigin = movement!.Value.From;
+                
                 UpdateGameStatus();
+                OnGameUpdated?.Invoke(lastMoveOrigin);
+
+                if (_gameStatus == GameStatus.Finished)
+                    break;
+
                 SwitchTurn();
             }
             else
@@ -92,14 +107,11 @@ public class GameController
 
         if (_gameStatus == GameStatus.Finished)
         {
-            _display.DisplayBoard(_board, lastMoveOrigin);
-            _display.DisplayHistory(_moveHistory);
-
             IPlayer opponent = _players[1 - _currentTurnIndex];
 
-            if (_currentTurn.Status == PlayerStatus.Checkmate)
+            if (opponent.Status == PlayerStatus.Checkmate)
             {
-                _display.DisplayMessage($"\nCHECKMATE! {opponent.PlayerName} wins!");
+                _display.DisplayMessage($"\nCHECKMATE! {_currentTurn.PlayerName} wins!");
             }
             else
             {
@@ -166,54 +178,51 @@ public class GameController
     {
         if (!IsLegalMove(move)) return false;
 
-        Action<Piece?, Piece?, Pawn?> onMoveMade = (movingPiece, killedPiece, promotedPawn) =>
-        {
-            HandleMoveDone(movingPiece!, killedPiece, promotedPawn, move);
-        };
+        bool result = _board.MovePiece(move.From, move.To, out Piece? movingPiece, out Piece? killedPiece, out Pawn? promotedPawn);
 
-        return _board.MovePiece(move.From, move.To, onMoveMade);
-    }
-
-    private void HandleMoveDone(Piece movingPiece, Piece? killedPiece, Pawn? promotedPawn, Movement move)
-    {
-        if (killedPiece is not null)
+        if (result)
         {
-            _board.KillPiece(killedPiece);
+            if (killedPiece is not null)
+            {
+                _board.KillPiece(killedPiece);
+            }
+
+            Piece? promotedPiece = null;
+            if (promotedPawn is not null)
+            // checking and executing promotion handled here, 
+            // CheckPromotion() would only make things complicated
+            {
+                PromoteOption choice = _display.AskPromotionChoice();
+
+                // create promotion piece
+                if (choice is PromoteOption.Rook) promotedPiece =  new Rook(promotedPawn.Color, promotedPawn.CurrentPosition);
+                else if (choice is PromoteOption.Bishop) promotedPiece = new Bishop(promotedPawn.Color, promotedPawn.CurrentPosition);
+                else if (choice is PromoteOption.Knight) promotedPiece = new Knight(promotedPawn.Color, promotedPawn.CurrentPosition);
+                else promotedPiece = new Queen(promotedPawn.Color, promotedPawn.CurrentPosition);
+
+                // replace pawn
+                Position position = promotedPawn.CurrentPosition;
+                _board.KillPiece(promotedPawn);
+                _board.GetBoard()[position.Row, position.Col] = promotedPiece;
+            }
+
+            _moveHistory.Add(new HistoryUnit
+            {
+                Piece = movingPiece,
+                StartingPosition = move.From,
+                EndingPosition = move.To,
+                IsKill = killedPiece != null,
+                IsCheck = IsInCheck(_players[1 - _currentTurnIndex]),
+                IsShortCastle = movingPiece is King && move.To.Col - move.From.Col == 2,
+                IsLongCastle = movingPiece is King && move.To.Col - move.From.Col == -2,
+                IsPromotion = promotedPawn != null,
+                PromotedPiece = promotedPiece,
+                KilledPiece = killedPiece
+            });
+            TrimMoveHistory();
         }
 
-        Piece? promotedPiece = null;
-        if (promotedPawn is not null)
-        // checking and executing promotion handled here, 
-        // CheckPromotion() would only make things complicated
-        {
-            PromoteOption choice = _display.AskPromotionChoice();
-
-            // create promotion piece
-            if (choice is PromoteOption.Rook) promotedPiece =  new Rook(promotedPawn.Color, promotedPawn.CurrentPosition);
-            else if (choice is PromoteOption.Bishop) promotedPiece = new Bishop(promotedPawn.Color, promotedPawn.CurrentPosition);
-            else if (choice is PromoteOption.Knight) promotedPiece = new Knight(promotedPawn.Color, promotedPawn.CurrentPosition);
-            else promotedPiece = new Queen(promotedPawn.Color, promotedPawn.CurrentPosition);
-
-            // replace pawn
-            Position position = promotedPawn.CurrentPosition;
-            _board.KillPiece(promotedPawn);
-            _board.GetBoard()[position.Row, position.Col] = promotedPiece;
-        }
-
-        _moveHistory.Add(new HistoryUnit
-        {
-            Piece = movingPiece,
-            StartingPosition = move.From,
-            EndingPosition = move.To,
-            IsKill = killedPiece != null,
-            IsCheck = IsInCheck(_players[1 - _currentTurnIndex]),
-            IsShortCastle = movingPiece is King && move.To.Col - move.From.Col == 2,
-            IsLongCastle = movingPiece is King && move.To.Col - move.From.Col == -2,
-            IsPromotion = promotedPawn != null,
-            PromotedPiece = promotedPiece,
-            KilledPiece = killedPiece
-        });
-        TrimMoveHistory();
+        return result;
     }
 
     private void TrimMoveHistory()
