@@ -9,7 +9,7 @@ class Program
 
         Task longTask = LongTask();
 
-        Task shortTask = ShortTask();
+        Task<string> shortTask = ShortTask();
 
         LongSyncTask();
 
@@ -21,9 +21,13 @@ class Program
 
         Task<List<int>> getNumberListTask = GetNumberList();
 
-        await shortTask;
+        string shortresult = await shortTask;
+
+        Console.WriteLine(shortresult);
 
         List<int> numList = await getNumberListTask;
+
+        _ = Task.Run(LongSyncTask);
 
         // Task[] tasks = {longTask, shortTask};
         // Task.WaitAll(tasks);
@@ -33,13 +37,14 @@ class Program
         Console.WriteLine("fin.");
     }
 
-    static async Task ShortTask() {
+    static async Task<string> ShortTask() {
         Console.WriteLine("short async task starts");
         for (int i = 1; i <= 3; i++) {
             await Task.Delay(1000);
             Console.WriteLine($"short async sec {i}");
         }
         Console.WriteLine("short async task done");
+        return "result accessible";
     }
 
     static async Task LongTask() {
