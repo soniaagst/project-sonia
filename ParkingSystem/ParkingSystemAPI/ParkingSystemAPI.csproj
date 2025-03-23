@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ParkingSystem\ParkingSystem.csproj" />
+    <ProjectReference Include="..\ParkingSystemLibrary\ParkingSystemLibrary.csproj" />
   </ItemGroup>
 
 </Project>

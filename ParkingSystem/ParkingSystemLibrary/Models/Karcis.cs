@@ -1,4 +1,4 @@
-namespace ParkingSystem;
+namespace ParkingSystemLibrary.Models;
 public class Karcis {
     public string Id {get;}
     public Vehicle Vehicle {get;}

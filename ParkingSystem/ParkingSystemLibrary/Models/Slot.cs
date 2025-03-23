@@ -1,4 +1,4 @@
-namespace ParkingSystem;
+namespace ParkingSystemLibrary.Models;
 public class Slot {
     public int SlotNumber {get;}
     public VehicleType AllowedType {get;}

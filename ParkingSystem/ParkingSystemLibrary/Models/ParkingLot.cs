@@ -1,4 +1,4 @@
-namespace ParkingSystem;
+namespace ParkingSystemLibrary.Models;
 public sealed class ParkingLot {
     private List<Slot> Slots = new();
     private Dictionary<string, Karcis> validKarcis = new();

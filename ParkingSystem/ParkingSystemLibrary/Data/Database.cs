@@ -1,4 +1,5 @@
-namespace ParkingSystem;
+namespace ParkingSystemLibrary.Models;
+
 internal static class Database {
     public static List<Vehicle> Vehicles{get;}
     static Database() {
