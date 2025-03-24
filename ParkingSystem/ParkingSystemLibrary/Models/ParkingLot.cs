@@ -15,7 +15,7 @@ public sealed class ParkingLot {
         }
     }
 
-    internal Karcis? ParkVehicle(Vehicle vehicle) {
+    public Karcis? ParkVehicle(Vehicle vehicle) {
         Slot? freeSpace = Slots.Find(slot => (slot.IsOccupied == false) && (slot.AllowedType == vehicle.Type));
         if (freeSpace == null) {
             Console.WriteLine($"No free space for {vehicle.Type}.");

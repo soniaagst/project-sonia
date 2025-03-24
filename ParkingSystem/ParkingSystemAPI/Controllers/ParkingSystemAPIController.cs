@@ -9,11 +9,11 @@ namespace ParkingSystemAPI.Controllers;
 public class ParkingSystemApiController : ControllerBase
 {
     private ParkingSystemAntarmuka _antarmukaParkingSys;
-    // private VehicleDb _vehicleDb;
+    private VehicleDb _vehicleDb;
 
     public ParkingSystemApiController(ParkingSystemAntarmuka antarmuka, VehicleDb vehicleDb) {
         _antarmukaParkingSys = antarmuka;
-        // _vehicleDb = vehicleDb;
+        _vehicleDb = vehicleDb;
     }
 
     [HttpPost]

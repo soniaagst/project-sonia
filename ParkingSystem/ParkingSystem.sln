@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingSystemLibrary", "Par
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingSystemAPI", "ParkingSystemAPI\ParkingSystemAPI.csproj", "{BDE7F109-13E3-4D75-B7FA-E2061BAEA09D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParkingSystemLibrary.Tests", "ParkingSystemLibrary.Tests\ParkingSystemLibrary.Tests.csproj", "{3295B36D-6AAC-4953-AA6D-6E741D4FB3F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{BDE7F109-13E3-4D75-B7FA-E2061BAEA09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDE7F109-13E3-4D75-B7FA-E2061BAEA09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDE7F109-13E3-4D75-B7FA-E2061BAEA09D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3295B36D-6AAC-4953-AA6D-6E741D4FB3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3295B36D-6AAC-4953-AA6D-6E741D4FB3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3295B36D-6AAC-4953-AA6D-6E741D4FB3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3295B36D-6AAC-4953-AA6D-6E741D4FB3F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
