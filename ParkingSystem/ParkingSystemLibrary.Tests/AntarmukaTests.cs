@@ -37,6 +37,16 @@ public class AntarmukaTests
     [Test]
     public async Task RegisterVehicle_Should_AddVehicleToDatabase()
     {
+        await _antarmuka.RegisterVehicle(VehicleType.Car, "D1234E", "Dadang");
+
+        var result = await _antarmuka.GetVehiclesData();
+
+        Assert.That(result, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ParkVehicle_Should_ReturnKarcis()
+    {
         var vehicles = new List<Vehicle>
         {
             new Vehicle(VehicleType.Motorcycle, "A1234B", "Anton"),
@@ -45,21 +55,20 @@ public class AntarmukaTests
             new Vehicle(VehicleType.Car, "D1234E", "Dadang")
         };
 
+        List<Karcis?> karcis2 = [];
+
         foreach (var vhc in vehicles)
         {
             await _antarmuka.RegisterVehicle(vhc.Type, vhc.LicensePlate, vhc.Owner);
+
+            karcis2.Add(await _antarmuka.ParkVehicle(vhc.LicensePlate));
         }
 
-        var result = await _antarmuka.GetVehiclesData();
+        var karcis = await _antarmuka.ParkVehicle("A1111A");
 
-        Assert.That(result, Has.Count.EqualTo(3));
-    }
-
-    [Test]
-    public async Task ParkVehicle_InputLicensePlateString_ReturnKarcis()
-    {
-        var karcis = await _antarmuka.ParkVehicle("A1234B");
-        Assert.That(karcis, Is.Not.Null);
-        Assert.That(karcis, Is.InstanceOf<Karcis>());
+        Assert.That(karcis2[0], Is.Not.Null);
+        Assert.That(karcis2[0], Is.InstanceOf<Karcis>());
+        Assert.That(karcis2[1], Is.Null);
+        Assert.That(karcis, Is.Null);
     }
 }
