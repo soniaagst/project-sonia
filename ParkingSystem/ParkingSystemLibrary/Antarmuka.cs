@@ -62,7 +62,7 @@ public class ParkingSystemAntarmuka
         return _parkingLot.ParkVehicle(vehicle);
     }
 
-    public async Task<double?> UnparkVehicle(string licensePlate, string karcisId)
+    public async Task<double?> UnparkVehicle(string licensePlate, Guid karcisId)
     {
         Vehicle? vehicle = await _vehicleDb.Vehicles.FirstOrDefaultAsync(vhc => vhc.LicensePlate == licensePlate);
 

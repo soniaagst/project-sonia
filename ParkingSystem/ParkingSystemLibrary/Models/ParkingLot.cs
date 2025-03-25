@@ -30,9 +30,8 @@ public sealed class ParkingLot {
         }
     }
 
-    internal double? RemoveVehicle(Vehicle vehicle, string karcisId) {
-        Guid parsedKarcisId = Guid.Parse(karcisId);
-        Karcis? karcis = validKarcis.Values.FirstOrDefault( k=> k.Id == parsedKarcisId);
+    internal double? RemoveVehicle(Vehicle vehicle, Guid karcisId) {
+        Karcis? karcis = validKarcis.Values.FirstOrDefault( k=> k.Id == karcisId);
 
         if (karcis is not null) {
             bool validated = validKarcis.ContainsKey(vehicle.LicensePlate) && (vehicle.LicensePlate == karcis.Vehicle.LicensePlate);

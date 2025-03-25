@@ -45,6 +45,16 @@ public class AntarmukaTests
     }
 
     [Test]
+    public async Task UnregVehicle_InputLicense_ReturnTrue()
+    {
+        await _antarmuka.RegisterVehicle(VehicleType.Car, "E1234F", "Endah");
+
+        var result = await _antarmuka.UnregVehicle("E1234F");
+
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
     public async Task ParkVehicle_Should_ReturnKarcis()
     {
         var vehicles = new List<Vehicle>
@@ -70,5 +80,16 @@ public class AntarmukaTests
         Assert.That(karcis2[0], Is.InstanceOf<Karcis>());
         Assert.That(karcis2[1], Is.Null);
         Assert.That(karcis, Is.Null);
+    }
+
+    [Test]
+    public async Task UnparkVehicle_Should_ReturnDouble()
+    {
+        await _antarmuka.RegisterVehicle(VehicleType.Motorcycle, "F1234G", "Fitri");
+        var karcis = await _antarmuka.ParkVehicle("F1234G");
+        
+        var result = await _antarmuka.UnparkVehicle("F1234G", karcis!.Id);
+
+        Assert.That(result, Is.InstanceOf<double>());
     }
 }
