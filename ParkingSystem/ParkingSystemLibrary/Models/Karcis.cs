@@ -1,12 +1,12 @@
 namespace ParkingSystemLibrary.Models;
 public class Karcis {
-    public string Id {get;}
+    public Guid Id {get;}
     public Vehicle Vehicle {get;}
     public DateTime EnterTime {get;}
     public DateTime? ExitTime {get; private set;}
 
     public Karcis(Vehicle vehicle) {
-        Id = GetRandomString();
+        Id = Guid.NewGuid();
         Vehicle = vehicle;
         EnterTime =  DateTime.Now;
     }
@@ -28,13 +28,4 @@ public class Karcis {
         {VehicleType.Car, 2_000},
         {VehicleType.Motorcycle, 1_000}
     };
-
-    private string GetRandomString() {
-        string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345789";
-        Random random = new Random();
-        string randomString = new string(Enumerable.Range(0, 9)
-            .Select(_ => chars[random.Next(chars.Length)]).ToArray());
-
-        return randomString;
-    }
 }
