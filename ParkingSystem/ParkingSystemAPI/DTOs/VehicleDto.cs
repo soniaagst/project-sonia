@@ -4,12 +4,7 @@ namespace ParkingSystemAPI.DTOs;
 
 public class VehicleDto
 {
-    public string LicensePlate {get;}
-    public VehicleType VehicleType {get;}
-
-    public VehicleDto(Vehicle vehicle)
-    {
-        LicensePlate = vehicle.LicensePlate;
-        VehicleType = vehicle.Type;
-    }
+    public string LicensePlate {get; set;}
+    public VehicleType Type {get; set;}
+    public string Owner {get; set;}
 }
