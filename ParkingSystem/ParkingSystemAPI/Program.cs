@@ -30,11 +30,11 @@ if (useInMemory)
     builder.Services.AddDbContext<VehicleDb>(options =>
         options.UseInMemoryDatabase("TestDb"));
 }
-// else
-// {
-//     builder.Services.AddDbContext<VehicleDb>(options =>
-//         options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-// }
+else
+{
+    builder.Services.AddDbContext<VehicleDb>(options =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
 builder.Services.AddControllers().AddNewtonsoftJson(option => 
 {
