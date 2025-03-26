@@ -9,7 +9,7 @@ using ParkingSystemLibrary.Data;
 
 namespace ParkingSystemLibrary.Migrations
 {
-    [DbContext(typeof(VehicleDb))]
+    [DbContext(typeof(ParkingDb))]
     [Migration("20250326143126_InitialCreate")]
     partial class InitialCreate
     {

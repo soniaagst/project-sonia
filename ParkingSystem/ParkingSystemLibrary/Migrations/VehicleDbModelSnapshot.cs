@@ -8,7 +8,7 @@ using ParkingSystemLibrary.Data;
 
 namespace ParkingSystemLibrary.Migrations
 {
-    [DbContext(typeof(VehicleDb))]
+    [DbContext(typeof(ParkingDb))]
     partial class VehicleDbModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

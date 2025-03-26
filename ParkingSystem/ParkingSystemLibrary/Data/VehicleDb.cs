@@ -3,11 +3,12 @@ using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemLibrary.Data;
 
-public class VehicleDb : DbContext
+public class ParkingDb : DbContext
 {
-    public VehicleDb(DbContextOptions<VehicleDb> options) : base(options) { }
+    public ParkingDb(DbContextOptions<ParkingDb> options) : base(options) { }
     
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
+    public DbSet<User> Users {get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

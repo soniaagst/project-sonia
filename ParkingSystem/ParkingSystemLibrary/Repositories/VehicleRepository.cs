@@ -6,37 +6,37 @@ namespace ParkingSystemLibrary.Repositories;
 
 public class VehicleRepository 
 {
-    private VehicleDb _vehicleDb;
+    private ParkingDb _parkingDb;
 
-    public VehicleRepository(VehicleDb vehicleDb)
+    public VehicleRepository(ParkingDb vehicleDb)
     {
-        _vehicleDb = vehicleDb;
+        _parkingDb = vehicleDb;
     }
 
     public async Task<List<Vehicle>> GetVehiclesAsync()
     {
-        return await _vehicleDb.Vehicles.ToListAsync();
+        return await _parkingDb.Vehicles.ToListAsync();
     }
 
     public async Task<List<Vehicle>> GetVehiclesByOwnerAsync(string owner)
     {
-        return await _vehicleDb.Vehicles.Where(vhcl => vhcl.Owner == owner).ToListAsync();
+        return await _parkingDb.Vehicles.Where(vhcl => vhcl.Owner == owner).ToListAsync();
     }
 
     public async Task<Vehicle?> GetVehicleByLicensePlateAsync(string licensePlate)
     {
-        return await _vehicleDb.Vehicles.FirstOrDefaultAsync(vhcl => vhcl.LicensePlate == licensePlate);
+        return await _parkingDb.Vehicles.FirstOrDefaultAsync(vhcl => vhcl.LicensePlate == licensePlate);
     }
 
     public async Task AddVehicleAsync(Vehicle vehicle)
     {
-        _vehicleDb.Vehicles.Add(vehicle);
-        await _vehicleDb.SaveChangesAsync();
+        _parkingDb.Vehicles.Add(vehicle);
+        await _parkingDb.SaveChangesAsync();
     }
 
     public async Task RemoveVehicleAsync(Vehicle vehicle)
     {
-        _vehicleDb.Vehicles.Remove(vehicle);
-        await _vehicleDb.SaveChangesAsync();
+        _parkingDb.Vehicles.Remove(vehicle);
+        await _parkingDb.SaveChangesAsync();
     }
 }

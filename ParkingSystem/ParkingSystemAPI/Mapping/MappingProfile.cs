@@ -11,5 +11,7 @@ public class MappingProfile : Profile
         CreateMap<Vehicle, VehicleDto>();
 
         CreateMap<Karcis, KarcisDto>();
+
+        CreateMap<User, UserDto>();
     }
 }
