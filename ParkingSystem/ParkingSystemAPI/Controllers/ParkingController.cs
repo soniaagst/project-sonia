@@ -1,0 +1,32 @@
+using Microsoft.AspNetCore.Mvc;
+using ParkingSystemAPI.Services;
+
+namespace ParkingSystemAPI.Controllers;
+
+[ApiController]
+[Route("[controller/parking]")]
+public class ParkingController : ControllerBase
+{
+    private ParkingLotApiService _parkingLotService;
+
+    public ParkingController(ParkingLotApiService parkingLotApiService)
+    {
+        _parkingLotService = parkingLotApiService;
+    }
+
+    [HttpPost]
+    [Route("/park")]
+    public async Task<IActionResult> ParkVehicle(string licensePlate) {
+        var karcis = await _parkingLotService.ParkVehicle(licensePlate);
+        if (karcis is null) return BadRequest();
+        return Ok(karcis);
+    }
+    
+    [HttpPost]
+    [Route("/unpark")]
+    public async Task<IActionResult> UnparkVehicle(string licensePlate, string karcisId) {
+        var fee = await _parkingLotService.UnparkVehicle(licensePlate, karcisId);
+        if (fee is null) return BadRequest();
+        return Ok(fee);
+    }
+}

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using ParkingSystemLibrary.Models;
 
-namespace ParkingSystemLibrary.Models;
+namespace ParkingSystemLibrary.Data;
 
 public class VehicleDb : DbContext
 {

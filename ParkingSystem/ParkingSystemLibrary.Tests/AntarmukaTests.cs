@@ -1,4 +1,5 @@
 using ParkingSystemLibrary.Models;
+using ParkingSystemLibrary.Services;
 using NUnit.Framework.Internal;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ public class AntarmukaTests
 {
     private ParkingLot _parkingLot;
     private VehicleDb _dbContext;
-    private ParkingSystemAntarmuka _antarmuka;
+    private VehicleService _antarmuka;
 
     [SetUp]
     public void Setup()
@@ -49,7 +50,7 @@ public class AntarmukaTests
     {
         await _antarmuka.RegisterVehicle(VehicleType.Car, "E1234F", "Endah");
 
-        var result = await _antarmuka.UnregVehicle("E1234F");
+        var result = await _antarmuka.UnregisterVehicle("E1234F");
 
         Assert.That(result, Is.True);
     }
