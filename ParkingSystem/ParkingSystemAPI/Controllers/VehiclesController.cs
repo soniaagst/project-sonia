@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParkingSystemAPI.Services;
 using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemAPI.Controllers;
 
+[Authorize]
 [ApiController]
-[Route("[controller/vehicle]")]
+[Route("[api/vehicles]")]
 public class VehiclesController : ControllerBase
 {
     private VehicleApiService _vehicleApiService;

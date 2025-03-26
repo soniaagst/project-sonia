@@ -1,1 +1,10 @@
 @ParkingSystemAPI_HostAddress = http://localhost:5276
+
+### Login Request
+POST {{ParkingSystemAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "password"
+}
