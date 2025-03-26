@@ -12,5 +12,9 @@ public class VehicleDb : DbContext
     {
         modelBuilder.Entity<Vehicle>()
             .HasKey(v => v.LicensePlate);
+        modelBuilder.Entity<Vehicle>()
+            .Property(v => v.Type);
+        modelBuilder.Entity<Vehicle>()
+            .Property(v => v.Owner);
     }
 }

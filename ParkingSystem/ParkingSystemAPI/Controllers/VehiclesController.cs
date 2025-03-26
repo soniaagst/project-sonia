@@ -41,7 +41,7 @@ public class VehiclesController : ControllerBase
 
     [HttpGet]
     [Route("/getallvehicle")]
-    public async Task<IActionResult> GetVehicles() {
+    public async Task<IActionResult> GetAllVehicles() {
         var vehicles = await _vehicleApiService.GetAllVehicles();
         return Ok(vehicles);
     }
@@ -50,7 +50,7 @@ public class VehiclesController : ControllerBase
     [Route("/unregistervehicle")]
     public async Task<IActionResult> UnregVehicle(string licensePlate) {
         var result = await _vehicleApiService.UnregVehicle(licensePlate);
-        if (result is false) return BadRequest();
+        if (result is false) return NotFound();
         return Ok();
     }
 }

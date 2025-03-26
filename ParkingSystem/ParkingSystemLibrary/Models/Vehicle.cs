@@ -8,10 +8,7 @@ public class Vehicle {
     public VehicleType Type {get;}
     public string Owner {get;}
 
-    private Vehicle() {
-        LicensePlate = GetFakeLicensePlate();
-        Owner = "unknown";
-    }
+    private Vehicle() {}
 
     public Vehicle(VehicleType type, string licensePlate, string owner) {
         Type = type;
