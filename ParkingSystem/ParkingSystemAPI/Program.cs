@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
-using AutoMapper;
 using ParkingSystemLibrary.Data;
 using ParkingSystemLibrary.Models;
 using ParkingSystemLibrary.Services;
 using ParkingSystemAPI.Services;
+using ParkingSystemLibrary.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 ParkingLot parkingLot = new();
 builder.Services.AddSingleton(parkingLot);
+
+builder.Services.AddScoped<VehicleRepository>();
 
 builder.Services.AddScoped<VehicleService>();
 
