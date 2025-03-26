@@ -4,11 +4,12 @@ using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemAPI.Mapping;
 
-public class VehicleProfile : Profile
+public class MappingProfile : Profile
 {
-    public VehicleProfile()
+    public MappingProfile()
     {
         CreateMap<Vehicle, VehicleDto>();
-        CreateMap<VehicleDto, Vehicle>();
+
+        CreateMap<Karcis, KarcisDto>();
     }
 }
