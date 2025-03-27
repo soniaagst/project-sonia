@@ -6,7 +6,7 @@ using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemAPI.Controllers;
 
-// [Authorize]
+[Authorize]
 [ApiController]
 [Route("api/vehicles")]
 public class VehiclesController : ControllerBase
@@ -49,6 +49,14 @@ public class VehiclesController : ControllerBase
         var vehicles = await _vehicleApiService.GetAllVehicles();
         return Ok(vehicles);
     }
+
+    // [HttpPut]
+    // [Route("/editowner")]
+    // public async Task<IActionResult> EditVehicleOwner(string licensePlate, string newOwner)
+    // {
+    //     var result = await _vehicleApiService.EditVehicleOwner(licensePlate, newOwner);
+
+    // }
 
     [HttpDelete]
     [Route("/unregistervehicle")]

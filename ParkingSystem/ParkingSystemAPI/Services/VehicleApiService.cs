@@ -47,9 +47,16 @@ public class VehicleApiService
         return vehicleDtos;
     }
 
-    public async Task<Vehicle> RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner)
+    public async Task<VehicleDto> RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner)
     {
-        return await _vehicleService.RegisterVehicle(vehicleType, licensePlate, owner);
+        Vehicle vehicle = await _vehicleService.RegisterVehicle(vehicleType, licensePlate, owner);
+
+        return _mapper.Map<VehicleDto>(vehicle);
+    }
+
+    public async Task<bool> EditVehicleOwner(string licensePlate, string newOwner)
+    {
+        return await _vehicleService.UpdateVehicleOwner(licensePlate, newOwner);
     }
 
     public async Task<bool> UnregVehicle(string licensePlate)

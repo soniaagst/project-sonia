@@ -6,7 +6,7 @@ public class Vehicle {
     [Key]
     public string LicensePlate {get;}
     public VehicleType Type {get;}
-    public string Owner {get;}
+    public string Owner {get; set;}
 
     private Vehicle() {}
 

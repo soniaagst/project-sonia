@@ -35,6 +35,16 @@ public class VehicleService
         return vehicle;
     }
 
+    public async Task<bool> UpdateVehicleOwner(string licensePlate, string newOwner)
+    {
+        var vehicle = await SearchByLicensePlate(licensePlate);
+
+        if (vehicle is null) return false;
+        
+        await _vehicleRepository.UpdateVehicleOwnerAsync(vehicle, newOwner);
+        return true;
+    }
+
     public async Task<bool> UnregisterVehicle(string licensePlate)
     {
         Vehicle? vehicle = await SearchByLicensePlate(licensePlate);
