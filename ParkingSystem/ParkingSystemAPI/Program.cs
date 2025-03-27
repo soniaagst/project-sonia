@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json.Converters;
 using ParkingSystemLibrary.Data;
 using ParkingSystemLibrary.Models;
-using ParkingSystemLibrary.Services;
 using ParkingSystemAPI.Services;
 using ParkingSystemLibrary.Repositories;
 using System.Text;
@@ -25,19 +24,13 @@ builder.Services.AddScoped<VehicleRepository>();
 
 builder.Services.AddScoped<UserRepository>();
 
-builder.Services.AddScoped<VehicleService>();
-
-builder.Services.AddScoped<ParkingLotService>();
-
 builder.Services.AddScoped<VehicleApiService>();
 
 builder.Services.AddScoped<ParkingLotApiService>();
 
-builder.Services.AddScoped<TokenService>();
-
 builder.Services.AddScoped<UserApiService>();
 
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<TokenService>();
 
 var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
 

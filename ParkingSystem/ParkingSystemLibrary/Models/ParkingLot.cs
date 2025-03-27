@@ -30,7 +30,7 @@ public sealed class ParkingLot {
         }
     }
 
-    internal double? RemoveVehicle(Vehicle vehicle, Guid karcisId) {
+    public double? RemoveVehicle(Vehicle vehicle, Guid karcisId) {
         Karcis? karcis = validKarcis.Values.FirstOrDefault( k=> k.Id == karcisId);
 
         if (karcis is not null) {

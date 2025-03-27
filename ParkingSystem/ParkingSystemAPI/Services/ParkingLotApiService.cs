@@ -1,30 +1,48 @@
 using ParkingSystemAPI.DTOs;
-using ParkingSystemLibrary.Services;
 using AutoMapper;
+using ParkingSystemLibrary.Models;
+using ParkingSystemLibrary.Repositories;
 
 namespace ParkingSystemAPI.Services;
 
 public class ParkingLotApiService
 {
-    private ParkingLotService _parkingLotService;
+    private VehicleRepository _vehicleRepository;
+    private VehicleApiService _vehicleService;
+    private ParkingLot _parkingLot;
     private IMapper _mapper;
 
-    public ParkingLotApiService(ParkingLotService parkingLotService, IMapper mapper)
+    public ParkingLotApiService(VehicleRepository vehicleRepository, VehicleApiService vehicleApiService, ParkingLot parkingLot, IMapper mapper)
     {
-        _parkingLotService = parkingLotService;
+        _vehicleRepository = vehicleRepository;
+        _vehicleService = vehicleApiService;
+        _parkingLot = parkingLot;
         _mapper = mapper;
     }
 
     public async Task<KarcisDto?> ParkVehicle(string licensePlate)
     {
-        var karcis = await _parkingLotService.ParkVehicle(licensePlate);
-        
+        Vehicle? vehicle = await _vehicleRepository.GetVehicleByLicensePlateAsync(licensePlate);
+
+        if (vehicle is null) return null;
+
+        var karcis = _parkingLot.ParkVehicle(vehicle);
+
         if (karcis is null) return null;
+
         return _mapper.Map<KarcisDto>(karcis);
     }
 
     public async Task<double?> UnparkVehicle(string licensePlate, string karcisId)
     {
-        return await _parkingLotService.UnparkVehicle(licensePlate, karcisId);
+        Vehicle? vehicle = await _vehicleRepository.GetVehicleByLicensePlateAsync(licensePlate);
+
+        if (vehicle is not null)
+        {
+            Guid parsedKarcisId = Guid.Parse(karcisId);
+            return _parkingLot.RemoveVehicle(vehicle, parsedKarcisId);
+        }
+
+        return null;
     }
 }
