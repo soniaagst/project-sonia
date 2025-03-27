@@ -34,6 +34,13 @@ public class VehicleRepository
         await _parkingDb.SaveChangesAsync();
     }
 
+    public async Task UpdateVehicleOwnerAsync(Vehicle vehicle, string newOwner)
+    {
+        vehicle.Owner = newOwner;
+        await _parkingDb.SaveChangesAsync();
+        // _parkingDb.Vehicles.Update(vehicle);
+    }
+
     public async Task RemoveVehicleAsync(Vehicle vehicle)
     {
         _parkingDb.Vehicles.Remove(vehicle);

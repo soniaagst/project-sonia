@@ -18,6 +18,9 @@ public class ParkingDb : DbContext
             .Property(v => v.Type);
         modelBuilder.Entity<Vehicle>()
             .Property(v => v.Owner);
+
+        modelBuilder.Entity<User>()
+            .HasKey(u => u.Id);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

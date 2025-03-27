@@ -28,20 +28,8 @@ public class AuthController : ControllerBase
 
         User newUser = await _userApiService.AddUser(username: registerDto.Username, password: hashedPassword);
 
-        // return CreatedAtAction(nameof(GetProfile), new { id = newUser.Id }, "User registered successfully.");
         return Ok("User registered successfully.");
     }
-
-    // [HttpGet("{id}")]
-    // public IActionResult GetProfile(Guid id)
-    // {
-    //     var user = _userApiService.GetUserById(id);
-    //     if (user == null)
-    //     {
-    //         return NotFound("User not found.");
-    //     }
-    //     return Ok(user);
-    // }
 
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)

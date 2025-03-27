@@ -8,6 +8,11 @@ using ParkingSystemLibrary.Services;
 using ParkingSystemAPI.Services;
 using ParkingSystemLibrary.Repositories;
 using System.Text;
+using FluentValidation.AspNetCore;
+using ParkingSystemAPI.Validators;
+using FluentValidation;
+using ParkingSystemAPI.Services.Auth;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +23,8 @@ builder.Services.AddSingleton(parkingLot);
 
 builder.Services.AddScoped<VehicleRepository>();
 
+builder.Services.AddScoped<UserRepository>();
+
 builder.Services.AddScoped<VehicleService>();
 
 builder.Services.AddScoped<ParkingLotService>();
@@ -25,6 +32,12 @@ builder.Services.AddScoped<ParkingLotService>();
 builder.Services.AddScoped<VehicleApiService>();
 
 builder.Services.AddScoped<ParkingLotApiService>();
+
+builder.Services.AddScoped<TokenService>();
+
+builder.Services.AddScoped<UserApiService>();
+
+builder.Services.AddScoped<UserService>();
 
 var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
 
@@ -43,6 +56,10 @@ builder.Services.AddControllers().AddNewtonsoftJson(option =>
 {
     option.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
+
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterVehicleValidator>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var securityKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
@@ -73,6 +90,45 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGenNewtonsoftSupport();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { 
+        Title = "Company Recruitment API", 
+        Version = "v1",
+        Description = "API for managing job recruitment for a company",
+        Contact = new OpenApiContact
+        {
+            Name = "Bima Dewantoro",
+            Email = "bimadewantoro22@gmail.com"
+        }
+    });
+    
+    // Add JWT Authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
