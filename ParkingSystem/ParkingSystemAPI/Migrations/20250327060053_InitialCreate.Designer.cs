@@ -8,10 +8,10 @@ using ParkingSystemLibrary.Data;
 
 #nullable disable
 
-namespace ParkingSystemLibrary.Migrations
+namespace ParkingSystemAPI.Migrations
 {
     [DbContext(typeof(ParkingDb))]
-    [Migration("20250327042716_InitialCreate")]
+    [Migration("20250327060053_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

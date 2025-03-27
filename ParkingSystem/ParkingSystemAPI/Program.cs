@@ -42,7 +42,8 @@ if (useInMemory)
 else
 {
     builder.Services.AddDbContext<ParkingDb>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("ParkingSystemAPI")));
 }
 
 builder.Services.AddControllers().AddNewtonsoftJson(option => 
@@ -87,14 +88,8 @@ builder.Services.AddSwaggerGenNewtonsoftSupport();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { 
-        Title = "Company Recruitment API", 
-        Version = "v1",
-        Description = "API for managing job recruitment for a company",
-        Contact = new OpenApiContact
-        {
-            Name = "Bima Dewantoro",
-            Email = "bimadewantoro22@gmail.com"
-        }
+        Title = "Parking System API", 
+        Version = "v1"
     });
     
     // Add JWT Authentication to Swagger

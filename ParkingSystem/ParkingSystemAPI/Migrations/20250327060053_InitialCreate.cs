@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ParkingSystemLibrary.Migrations
+namespace ParkingSystemAPI.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

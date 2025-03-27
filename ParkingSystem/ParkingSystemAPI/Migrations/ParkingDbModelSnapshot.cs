@@ -7,7 +7,7 @@ using ParkingSystemLibrary.Data;
 
 #nullable disable
 
-namespace ParkingSystemLibrary.Migrations
+namespace ParkingSystemAPI.Migrations
 {
     [DbContext(typeof(ParkingDb))]
     partial class ParkingDbModelSnapshot : ModelSnapshot
