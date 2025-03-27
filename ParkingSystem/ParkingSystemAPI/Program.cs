@@ -11,7 +11,7 @@ using System.Text;
 using FluentValidation.AspNetCore;
 using ParkingSystemAPI.Validators;
 using FluentValidation;
-// using ParkingSystemAPI.Services.Auth;
+using ParkingSystemAPI.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +22,8 @@ builder.Services.AddSingleton(parkingLot);
 
 builder.Services.AddScoped<VehicleRepository>();
 
+builder.Services.AddScoped<UserRepository>();
+
 builder.Services.AddScoped<VehicleService>();
 
 builder.Services.AddScoped<ParkingLotService>();
@@ -30,9 +32,11 @@ builder.Services.AddScoped<VehicleApiService>();
 
 builder.Services.AddScoped<ParkingLotApiService>();
 
-// builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TokenService>();
 
-// builder.Services.AddScoped<UserApiService>();
+builder.Services.AddScoped<UserApiService>();
+
+builder.Services.AddScoped<UserService>();
 
 var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
 
@@ -59,23 +63,23 @@ builder.Services.AddValidatorsFromAssemblyContaining<RegisterVehicleValidator>()
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var securityKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options =>
-//     {
-//         options.TokenValidationParameters = new TokenValidationParameters
-//         {
-//             ValidateIssuerSigningKey = true,
-//             IssuerSigningKey = new SymmetricSecurityKey(securityKey),
-//             ValidateIssuer = true,
-//             ValidIssuer = jwtSettings["Issuer"],
-//             ValidateAudience = true,
-//             ValidAudience = jwtSettings["Audience"],
-//             ValidateLifetime = true,
-//             ClockSkew = TimeSpan.Zero
-//         };
-//     });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(securityKey),
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidateAudience = true,
+            ValidAudience = jwtSettings["Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
-// builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -99,7 +103,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
-// app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
 

@@ -8,7 +8,7 @@ public class ParkingDb : DbContext
     public ParkingDb(DbContextOptions<ParkingDb> options) : base(options) { }
     
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
-    // public DbSet<User> Users {get; set;}
+    public DbSet<User> Users {get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -18,6 +18,9 @@ public class ParkingDb : DbContext
             .Property(v => v.Type);
         modelBuilder.Entity<Vehicle>()
             .Property(v => v.Owner);
+
+        modelBuilder.Entity<User>()
+            .HasKey(u => u.Id);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -6,7 +6,7 @@ using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemAPI.Controllers;
 
-// [Authorize]
+[Authorize]
 [ApiController]
 [Route("api/vehicles")]
 public class VehiclesController : ControllerBase
