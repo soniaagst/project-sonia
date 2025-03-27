@@ -1,47 +1,47 @@
-using AutoMapper;
-using ParkingSystemAPI.DTOs;
-using ParkingSystemLibrary.Models;
-using ParkingSystemLibrary.Services;
+// using AutoMapper;
+// using ParkingSystemAPI.DTOs;
+// using ParkingSystemLibrary.Models;
+// using ParkingSystemLibrary.Services;
 
-namespace ParkingSystemAPI.Services.Auth;
+// namespace ParkingSystemAPI.Services.Auth;
 
-public class UserApiService
-{
-    private UserService _userService;
-    private IMapper _mapper;
+// public class UserApiService
+// {
+//     private UserService _userService;
+//     private IMapper _mapper;
 
-    public UserApiService(UserService userService, IMapper mapper)
-    {
-        _userService = userService;
-        _mapper = mapper;
-    }
+//     public UserApiService(UserService userService, IMapper mapper)
+//     {
+//         _userService = userService;
+//         _mapper = mapper;
+//     }
 
-    public async Task<List<UserDto>> GetUsers()
-    {
-        List<User> users = await _userService.GetUsers();
-        List<UserDto> userDtos = [];
+//     public async Task<List<UserDto>> GetUsers()
+//     {
+//         List<User> users = await _userService.GetUsers();
+//         List<UserDto> userDtos = [];
 
-        foreach(var user in users)
-            userDtos.Add(_mapper.Map<UserDto>(user));
+//         foreach(var user in users)
+//             userDtos.Add(_mapper.Map<UserDto>(user));
 
-        return userDtos;
-    }
+//         return userDtos;
+//     }
 
-    public async Task<User?> GetUserByUsername(string username)
-    {
-        var user = await _userService.GetUserByUsername(username);
+//     public async Task<User?> GetUserByUsername(string username)
+//     {
+//         var user = await _userService.GetUserByUsername(username);
 
-        if (user is null) return null;
-        return user;
-    }
+//         if (user is null) return null;
+//         return user;
+//     }
 
-    public async Task<User> AddUser(string username, string password)
-    {
-        return await _userService.AddUser(username, password);
-    }
+//     public async Task<User> AddUser(string username, string password)
+//     {
+//         return await _userService.AddUser(username, password);
+//     }
 
-    public async Task<bool> RemoveUser(string username, string password)
-    {
-        return await _userService.RemoveUser(username, password);
-    }
-}
+//     public async Task<bool> RemoveUser(string username, string password)
+//     {
+//         return await _userService.RemoveUser(username, password);
+//     }
+// }

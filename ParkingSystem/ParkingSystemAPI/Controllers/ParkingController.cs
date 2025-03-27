@@ -4,7 +4,7 @@ using ParkingSystemAPI.Services;
 
 namespace ParkingSystemAPI.Controllers;
 
-[Authorize]
+// [Authorize]
 [ApiController]
 [Route("api/parking")]
 public class ParkingController : ControllerBase

@@ -8,7 +8,7 @@ public class ParkingDb : DbContext
     public ParkingDb(DbContextOptions<ParkingDb> options) : base(options) { }
     
     public DbSet<Vehicle> Vehicles { get; set; } = null!;
-    public DbSet<User> Users {get; set;}
+    // public DbSet<User> Users {get; set;}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
