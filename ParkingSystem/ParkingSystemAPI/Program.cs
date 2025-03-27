@@ -30,12 +30,12 @@ var useInMemory = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
 
 if (useInMemory)
 {
-    builder.Services.AddDbContext<VehicleDb>(options =>
+    builder.Services.AddDbContext<ParkingDb>(options =>
         options.UseInMemoryDatabase("TestDb"));
 }
 else
 {
-    builder.Services.AddDbContext<VehicleDb>(options =>
+    builder.Services.AddDbContext<ParkingDb>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 }
 
@@ -44,9 +44,8 @@ builder.Services.AddControllers().AddNewtonsoftJson(option =>
     option.SerializerSettings.Converters.Add(new StringEnumConverter());
 });
 
-
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Secret"]!);
+var securityKey = Encoding.UTF8.GetBytes(jwtSettings["Secret"]!);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -54,7 +53,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
+            IssuerSigningKey = new SymmetricSecurityKey(securityKey),
             ValidateIssuer = true,
             ValidIssuer = jwtSettings["Issuer"],
             ValidateAudience = true,
@@ -63,6 +62,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(typeof(Program));
 

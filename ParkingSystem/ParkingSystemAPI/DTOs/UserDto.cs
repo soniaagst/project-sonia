@@ -4,6 +4,6 @@ namespace ParkingSystemAPI.DTOs;
 
 public class UserDto
 {
-    public string Username;
-    public UserRole Role;
+    public string Username {get; set;}
+    public UserRole Role {get; set;}
 }

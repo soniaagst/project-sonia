@@ -27,17 +27,17 @@ public class UserApiService
         return userDtos;
     }
 
-    public async Task<UserDto?> GetUserByUsername(string username)
+    public async Task<User?> GetUserByUsername(string username)
     {
         var user = await _userService.GetUserByUsername(username);
 
         if (user is null) return null;
-        return _mapper.Map<UserDto>(user);
+        return user;
     }
 
-    public async Task AddUser(string username, string password)
+    public async Task<User> AddUser(string username, string password)
     {
-        await _userService.AddUser(username, password);
+        return await _userService.AddUser(username, password);
     }
 
     public async Task<bool> RemoveUser(string username, string password)

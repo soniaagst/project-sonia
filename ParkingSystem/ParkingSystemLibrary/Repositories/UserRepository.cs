@@ -20,7 +20,7 @@ public class UserRepository
 
     public async Task<User?> GetUserByUsernameAsync(string username)
     {
-        return await _parkingDb.Users.FirstOrDefaultAsync(u => u.Username == username);
+        return await _parkingDb.Users.FirstOrDefaultAsync(u => u.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase));
     }
 
     public async Task AddUserAsync(User user)

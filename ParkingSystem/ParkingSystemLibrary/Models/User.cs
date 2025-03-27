@@ -9,6 +9,7 @@ public class User
 
     public User(string username, string password)
     {
+        Id = Guid.NewGuid();
         Username = username;
         Password = password;
     }

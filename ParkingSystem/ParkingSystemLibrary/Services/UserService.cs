@@ -21,11 +21,13 @@ public class UserService
         return await _userRepository.GetUserByUsernameAsync(username);
     }
 
-    public async Task AddUser(string username, string password)
+    public async Task<User> AddUser(string username, string password)
     {
         User user = new(username, password);
 
         await _userRepository.AddUserAsync(user);
+
+        return user;
     }
 
     public async Task<bool> RemoveUser(string username, string password)

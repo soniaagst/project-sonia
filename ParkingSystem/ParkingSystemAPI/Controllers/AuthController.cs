@@ -1,32 +1,58 @@
 using Microsoft.AspNetCore.Mvc;
+using ParkingSystemAPI.DTOs.Requests;
+using ParkingSystemAPI.Services.Auth;
+using ParkingSystemLibrary.Models;
+
+namespace ParkingSystemAPI.Controllers;
 
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
     private readonly TokenService _tokenService;
+    private UserApiService _userApiService;
 
-    public AuthController(TokenService tokenService)
+    public AuthController(TokenService tokenService, UserApiService userApiService)
     {
         _tokenService = tokenService;
+        _userApiService = userApiService;
     }
 
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequestDto loginRequest)
+    [HttpPost("Register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
     {
-        // Dummy check (replace with actual user authentication)
-        if (loginRequest.Username == "admin" && loginRequest.Password == "password")
+        var existingUser = await _userApiService.GetUserByUsername(registerDto.Username);
+        if (existingUser is not null) return Conflict("Username is already registered.");
+
+        string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
+
+        User newUser = await _userApiService.AddUser(username: registerDto.Username, password: hashedPassword);
+
+        // return CreatedAtAction(nameof(GetProfile), new { id = newUser.Id }, "User registered successfully.");
+        return Ok("User registered successfully.");
+    }
+
+    // [HttpGet("{id}")]
+    // public IActionResult GetProfile(Guid id)
+    // {
+    //     var user = _userApiService.GetUserById(id);
+    //     if (user == null)
+    //     {
+    //         return NotFound("User not found.");
+    //     }
+    //     return Ok(user);
+    // }
+
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
+    {
+        var user = await _userApiService.GetUserByUsername(loginRequest.Username);
+        if (user is null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password))
         {
-            var token = _tokenService.GenerateToken(loginRequest.Username);
-            return Ok(new { Token = token });
+            return Unauthorized("Invalid credentials.");
         }
 
-        return Unauthorized("Invalid credentials");
+        var token = _tokenService.GenerateJwtToken(user);
+        return Ok(new { Token = token });
     }
-}
-
-public class LoginRequestDto
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
 }
