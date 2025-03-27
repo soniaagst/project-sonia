@@ -26,11 +26,13 @@ public class VehicleService
         return await _vehicleRepository.GetVehicleByLicensePlateAsync(licensePlate);
     }
 
-    public async Task RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner)
+    public async Task<Vehicle> RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner)
     {
         Vehicle vehicle = new(vehicleType, licensePlate, owner);
 
         await _vehicleRepository.AddVehicleAsync(vehicle);
+
+        return vehicle;
     }
 
     public async Task<bool> UnregisterVehicle(string licensePlate)

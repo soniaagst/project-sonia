@@ -12,6 +12,6 @@ public class MappingProfile : Profile
 
         CreateMap<Karcis, KarcisDto>();
 
-        CreateMap<User, UserDto>();
+        // CreateMap<User, UserDto>();
     }
 }

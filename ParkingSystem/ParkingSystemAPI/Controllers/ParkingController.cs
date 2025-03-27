@@ -4,9 +4,9 @@ using ParkingSystemAPI.Services;
 
 namespace ParkingSystemAPI.Controllers;
 
-[Authorize]
+// [Authorize]
 [ApiController]
-[Route("[api/parking]")]
+[Route("api/parking")]
 public class ParkingController : ControllerBase
 {
     private ParkingLotApiService _parkingLotService;
