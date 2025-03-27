@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ParkingSystemAPI.DTOs.Requests;
 using ParkingSystemAPI.Services.Auth;
-using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemAPI.Controllers;
 
@@ -10,23 +9,23 @@ namespace ParkingSystemAPI.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly TokenService _tokenService;
-    private UserApiService _userApiService;
+    private UserService _userService;
 
-    public AuthController(TokenService tokenService, UserApiService userApiService)
+    public AuthController(TokenService tokenService, UserService userService)
     {
         _tokenService = tokenService;
-        _userApiService = userApiService;
+        _userService = userService;
     }
 
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
     {
-        var existingUser = await _userApiService.GetUserByUsername(registerDto.Username);
+        var existingUser = await _userService.GetUserByUsernameAsync(registerDto.Username);
         if (existingUser is not null) return Conflict("Username is already registered.");
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
 
-        User newUser = await _userApiService.AddUser(username: registerDto.Username, password: hashedPassword);
+        await _userService.AddUserAsync(username: registerDto.Username, password: hashedPassword);
 
         return Ok("User registered successfully.");
     }
@@ -34,7 +33,7 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
     {
-        var user = await _userApiService.GetUserByUsername(loginRequest.Username);
+        var user = await _userService.GetUserByUsernameAsync(loginRequest.Username);
         if (user is null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password))
         {
             return Unauthorized("Invalid credentials.");

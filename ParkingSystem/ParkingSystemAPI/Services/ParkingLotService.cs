@@ -5,17 +5,15 @@ using ParkingSystemLibrary.Repositories;
 
 namespace ParkingSystemAPI.Services;
 
-public class ParkingLotApiService
+public class ParkingLotService
 {
-    private VehicleRepository _vehicleRepository;
-    private VehicleApiService _vehicleService;
+    private IVehicleRepository _vehicleRepository;
     private ParkingLot _parkingLot;
     private IMapper _mapper;
 
-    public ParkingLotApiService(VehicleRepository vehicleRepository, VehicleApiService vehicleApiService, ParkingLot parkingLot, IMapper mapper)
+    public ParkingLotService(IVehicleRepository vehicleRepository, ParkingLot parkingLot, IMapper mapper)
     {
         _vehicleRepository = vehicleRepository;
-        _vehicleService = vehicleApiService;
         _parkingLot = parkingLot;
         _mapper = mapper;
     }

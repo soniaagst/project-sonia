@@ -9,9 +9,9 @@ namespace ParkingSystemAPI.Controllers;
 [Route("api/parking")]
 public class ParkingController : ControllerBase
 {
-    private ParkingLotApiService _parkingLotService;
+    private ParkingLotService _parkingLotService;
 
-    public ParkingController(ParkingLotApiService parkingLotApiService)
+    public ParkingController(ParkingLotService parkingLotApiService)
     {
         _parkingLotService = parkingLotApiService;
     }

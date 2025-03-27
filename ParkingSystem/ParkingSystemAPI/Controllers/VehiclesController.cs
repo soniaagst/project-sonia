@@ -11,9 +11,9 @@ namespace ParkingSystemAPI.Controllers;
 [Route("api/vehicles")]
 public class VehiclesController : ControllerBase
 {
-    private VehicleApiService _vehicleApiService;
+    private VehicleService _vehicleApiService;
 
-    public VehiclesController(VehicleApiService vehicleApiService) {
+    public VehiclesController(VehicleService vehicleApiService) {
         _vehicleApiService = vehicleApiService;
     }
 

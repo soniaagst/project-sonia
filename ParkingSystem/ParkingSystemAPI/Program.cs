@@ -20,15 +20,15 @@ var builder = WebApplication.CreateBuilder(args);
 ParkingLot parkingLot = new();
 builder.Services.AddSingleton(parkingLot);
 
-builder.Services.AddScoped<VehicleRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 
-builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddScoped<VehicleApiService>();
+builder.Services.AddScoped<VehicleService>();
 
-builder.Services.AddScoped<ParkingLotApiService>();
+builder.Services.AddScoped<ParkingLotService>();
 
-builder.Services.AddScoped<UserApiService>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddScoped<TokenService>();
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ParkingSystemLibrary.Repositories;
 
-public class VehicleRepository 
+public class VehicleRepository : IVehicleRepository
 {
     private ParkingDb _parkingDb;
 
@@ -38,7 +38,6 @@ public class VehicleRepository
     {
         vehicle.Owner = newOwner;
         await _parkingDb.SaveChangesAsync();
-        // _parkingDb.Vehicles.Update(vehicle);
     }
 
     public async Task RemoveVehicleAsync(Vehicle vehicle)

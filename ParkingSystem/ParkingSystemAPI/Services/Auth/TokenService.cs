@@ -30,7 +30,7 @@ public class TokenService
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(30),
+            expires: DateTime.Now.AddDays(1),
             signingCredentials: credentials
         );
 

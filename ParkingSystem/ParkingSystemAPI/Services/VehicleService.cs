@@ -5,12 +5,12 @@ using ParkingSystemLibrary.Repositories;
 
 namespace ParkingSystemAPI.Services;
 
-public class VehicleApiService
+public class VehicleService
 {
-    private VehicleRepository _vehicleRepository;
+    private IVehicleRepository _vehicleRepository;
     private IMapper _mapper;
 
-    public VehicleApiService(VehicleRepository vehicleRepository, IMapper mapper)
+    public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper)
     {
         _vehicleRepository = vehicleRepository;
         _mapper = mapper;
@@ -62,6 +62,7 @@ public class VehicleApiService
         var vehicle = await _vehicleRepository.GetVehicleByLicensePlateAsync(licensePlate);
 
         if (vehicle is null) return false;
+        
         await _vehicleRepository.UpdateVehicleOwnerAsync(vehicle, newOwner);
         return true;
     }

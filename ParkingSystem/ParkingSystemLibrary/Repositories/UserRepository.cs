@@ -4,7 +4,7 @@ using ParkingSystemLibrary.Models;
 
 namespace ParkingSystemLibrary.Repositories;
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
     private ParkingDb _parkingDb;
 
