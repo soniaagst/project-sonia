@@ -1,5 +1,3 @@
-using AutoMapper;
-using ParkingSystemAPI.DTOs;
 using ParkingSystemLibrary.Models;
 using ParkingSystemLibrary.Repositories;
 
@@ -8,53 +6,37 @@ namespace ParkingSystemAPI.Services;
 public class VehicleService
 {
     private IVehicleRepository _vehicleRepository;
-    private IMapper _mapper;
 
-    public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper)
+    public VehicleService(IVehicleRepository vehicleRepository)
     {
         _vehicleRepository = vehicleRepository;
-        _mapper = mapper;
     }
 
-    public async Task<List<VehicleDto>> GetAllVehicles()
+    public async Task<List<Vehicle>> GetAllVehicles()
     {
-        List<Vehicle> vehicles = await _vehicleRepository.GetVehiclesAsync();
-        List<VehicleDto> vehicleDtos = [];
-
-        foreach(var vehicle in vehicles)
-            vehicleDtos.Add(_mapper.Map<VehicleDto>(vehicle));
-
-        return vehicleDtos;
+        return await _vehicleRepository.GetVehiclesAsync();
     }
 
-    public async Task<VehicleDto?> SearchByLicensePlate(string licensePlate)
+    public async Task<Vehicle?> SearchByLicensePlate(string licensePlate)
     {
-        var vehicle = await _vehicleRepository.GetVehicleByLicensePlateAsync(licensePlate);
-
-        if (vehicle is not null)
-            return _mapper.Map<VehicleDto>(vehicle);
-
-        else return null;
+        return await _vehicleRepository.GetVehicleByLicensePlateAsync(licensePlate);
     }
 
-    public async Task<List<VehicleDto>> SearchByOwner(string owner)
+    public async Task<List<Vehicle>> SearchByOwner(string owner)
     {
-        List<Vehicle> vehicles = await _vehicleRepository.GetVehiclesByOwnerAsync(owner);
-        List<VehicleDto> vehicleDtos = [];
-
-        foreach (var vehicle in vehicles)
-            vehicleDtos.Add(_mapper.Map<VehicleDto>(vehicle));
-
-        return vehicleDtos;
+        return await _vehicleRepository.GetVehiclesByOwnerAsync(owner);
     }
 
-    public async Task<VehicleDto> RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner)
+    public async Task<Vehicle> RegisterVehicle(VehicleType vehicleType, string licensePlate, string owner)
     {
-        Vehicle vehicle = new(vehicleType, licensePlate, owner);
+        Vehicle vehicle = new Vehicle{
+            Type = vehicleType, 
+            LicensePlate = licensePlate, 
+            Owner = owner};
 
         await _vehicleRepository.AddVehicleAsync(vehicle);
 
-        return _mapper.Map<VehicleDto>(vehicle);
+        return vehicle;
     }
 
     public async Task<bool> EditVehicleOwner(string licensePlate, string newOwner)

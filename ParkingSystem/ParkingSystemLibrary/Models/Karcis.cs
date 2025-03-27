@@ -1,14 +1,12 @@
 namespace ParkingSystemLibrary.Models;
 public class Karcis {
-    public Guid Id {get;}
+    public Guid Id {get;} = Guid.NewGuid();
     public Vehicle Vehicle {get;}
-    public DateTime EnterTime {get;}
+    public DateTime EnterTime {get;} = DateTime.Now;
     public DateTime? ExitTime {get; private set;}
 
     public Karcis(Vehicle vehicle) {
-        Id = Guid.NewGuid();
         Vehicle = vehicle;
-        EnterTime =  DateTime.Now;
     }
 
     internal void EndParking() {

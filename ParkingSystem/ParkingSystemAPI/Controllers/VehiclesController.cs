@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ParkingSystemAPI.DTOs;
 using ParkingSystemAPI.DTOs.Requests;
 using ParkingSystemAPI.Services;
 using ParkingSystemLibrary.Models;
@@ -11,59 +13,81 @@ namespace ParkingSystemAPI.Controllers;
 [Route("api/vehicles")]
 public class VehiclesController : ControllerBase
 {
-    private VehicleService _vehicleApiService;
+    private VehicleService _vehicleService;
+    private IMapper _mapper;
 
-    public VehiclesController(VehicleService vehicleApiService) {
-        _vehicleApiService = vehicleApiService;
+    public VehiclesController(VehicleService vehicleApiService, IMapper mapper) {
+        _vehicleService = vehicleApiService;
+        _mapper = mapper;
     }
 
     [HttpPost]
     [Route("/registervehicle")]
     public async Task<IActionResult> RegisterVehicle([FromBody] RegisterVehicleRequest request)
     {
-        var vehicle = await _vehicleApiService.RegisterVehicle(request.Type, request.LicensePlate, request.Owner);
-        return CreatedAtAction(nameof(SearchByLicensePlate), new { licensePlate = vehicle.LicensePlate }, vehicle);
-    }
-
-    [HttpGet]
-    [Route("/searchbyowner")]
-    public async Task<IActionResult> SearchByOwner(string owner) {
-        var vehicles = await _vehicleApiService.SearchByOwner(owner);
+        var vehicle = await _vehicleService.RegisterVehicle(request.Type, request.LicensePlate, request.Owner);
         
-        if (vehicles.Count == 0) return NotFound();
-        return Ok(vehicles);
-    }
+        VehicleDto vehicleDto = _mapper.Map<VehicleDto>(vehicle);
 
-    [HttpGet]
-    [Route("/searchbylicense")]
-    public async Task<IActionResult> SearchByLicensePlate(string licensePlate) {
-        var vehicle = await _vehicleApiService.SearchByLicensePlate(licensePlate);
-
-        if (vehicle is null) return NotFound();
-        return Ok(vehicle);
+        return CreatedAtAction(nameof(SearchByLicensePlate), new { licensePlate = vehicleDto.LicensePlate }, vehicleDto);
     }
 
     [HttpGet]
     [Route("/getallvehicle")]
     public async Task<IActionResult> GetAllVehicles() {
-        var vehicles = await _vehicleApiService.GetAllVehicles();
-        return Ok(vehicles);
+        List<Vehicle> vehicles = await _vehicleService.GetAllVehicles();
+
+        if (vehicles.Count == 0) return NotFound("Database empty.");
+
+        List<VehicleDto> vehicleDtos = [];
+        foreach(var vehicle in vehicles)
+            vehicleDtos.Add(_mapper.Map<VehicleDto>(vehicle));
+
+        return Ok(vehicleDtos);
+    }
+
+    [HttpGet]
+    [Route("/searchbyowner")]
+    public async Task<IActionResult> SearchByOwner(string owner) {
+        var vehicles = await _vehicleService.SearchByOwner(owner);
+        
+        if (vehicles.Count == 0) return NotFound($"No matches for {owner}.");
+        
+        List<VehicleDto> vehicleDtos = [];
+        foreach (var vehicle in vehicles)
+            vehicleDtos.Add(_mapper.Map<VehicleDto>(vehicle));
+
+        return Ok(vehicleDtos);
+    }
+
+    [HttpGet]
+    [Route("/searchbylicense")]
+    public async Task<IActionResult> SearchByLicensePlate(string licensePlate) {
+        var vehicle = await _vehicleService.SearchByLicensePlate(licensePlate);
+
+        if (vehicle is null) return NotFound("License plate not registered.");
+
+        return Ok(_mapper.Map<VehicleDto>(vehicle));
     }
 
     [HttpPut]
-    [Route("/editowner")]
+    [Route("/editvehicleowner")]
     public async Task<IActionResult> EditVehicleOwner(string licensePlate, string newOwner)
     {
-        var result = await _vehicleApiService.EditVehicleOwner(licensePlate, newOwner);
+        var result = await _vehicleService.EditVehicleOwner(licensePlate, newOwner);
+
         if (result is true) return Ok("Owner name updated.");
-        return NotFound("No vehicle match.");
+
+        return NotFound("Can't edit non-existing data.");
     }
 
     [HttpDelete]
     [Route("/unregistervehicle")]
     public async Task<IActionResult> UnregVehicle(string licensePlate) {
-        var result = await _vehicleApiService.UnregVehicle(licensePlate);
-        if (result is false) return NotFound();
-        return Ok();
+        var result = await _vehicleService.UnregVehicle(licensePlate);
+
+        if (result is false) return NotFound("Can't delete non-existing data.");
+        
+        else return Ok("Vehicle data permanently deleted.");
     }
 }

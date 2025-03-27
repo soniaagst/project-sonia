@@ -28,7 +28,10 @@ public class UserService
 
     public async Task AddUserAsync(string username, string password)
     {
-        User user = new(username, password);
+        User user = new User {
+            Username = username, 
+            Password = password
+        };
 
         await _userRepository.AddUserAsync(user);
     }
