@@ -400,6 +400,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 # SQLite
-.db
-.db-shm
-.db-wal
+*.db
+*.db-shm
+*.db-wal
